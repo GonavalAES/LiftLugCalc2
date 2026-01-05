@@ -1,0 +1,6 @@
+﻿Material ID;Designation;Yield Strength Mpa;Tensile Strength Mpa;Young Modulus Mpa;Poisson Ratio;Fatigue Strength Mpa;Fatigue S-N Slope
+1;Steel S235;235;360;210000;0,3;140;3
+2;Steel S335;335;450;210000;0,3;150;3
+3;Steel S355;355;470;210000;0,3;160;3
+4;Alu 5083;215;275;70000;0,33;90;5
+5;Alu 6082;250;310;70000;0,33;100;5

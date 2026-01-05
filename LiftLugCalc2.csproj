@@ -16,8 +16,4 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LiftLugCalc2.Core\LiftLugCalc2.Core\LiftLugCalc2.Core.csproj" />
-  </ItemGroup>
-
 </Project>
