@@ -16,4 +16,7 @@ public record ProjectInput
     public double A2 { get; set; }            // Distance from COG to 2nd point (longitudinal)
     public double B1 { get; set; }            // Distance transverse 1
     public double B2 { get; set; }            // Distance transverse 2
+
+    public int? UserLugID { get; set; }
+    public int? UserMaterialID { get; set; }
 }

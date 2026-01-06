@@ -2,6 +2,9 @@
 {
     public static class Constants
     {
+        // ========== UI DATE FORMAT ==========
+        public const string DATE_FORMAT = "dd-MM-yyyy";
+
         // ========== DATA FILE NAMES ==========
         public const string FILE_LUGS = "LugType.csv";
         public const string FILE_MATERIALS = "Materials.csv";

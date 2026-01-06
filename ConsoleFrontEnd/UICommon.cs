@@ -1,4 +1,5 @@
 ﻿using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.Core.Utilities;
 
 namespace LiftLugCalc2.ConsoleFrontEnd;
 
@@ -41,9 +42,9 @@ public static class UICommon
     public static void NumberPointsHeader()
     {
         Console.WriteLine("╔════════════════════════════════════════════════════╗");
-        Console.WriteLine("║ Number of sling points (legs)                      ║");
+        Console.WriteLine("║ Number of lifting points                           ║");
         Console.WriteLine("║ Valid options: 1, 2, 3, or 4                       ║");
-        Console.WriteLine("║ NORSOK recommends 2–3 points where possible        ║");
+        Console.WriteLine("║ (NORSOK recommends 2–3 points where possible)      ║");
         Console.WriteLine("╚════════════════════════════════════════════════════╝");
         Console.Write("> Enter number of sling points: ");
     }
@@ -75,7 +76,9 @@ public static class UICommon
         Console.WriteLine("               B1                ");
         Console.WriteLine("       1 ←---[CoG]---→ 2         ");
         Console.WriteLine("        ↑             ↑          ");
+        Console.WriteLine("        |             |          ");
         Console.WriteLine("    A1[CoG]   CoG   [CoG]A2      ");
+        Console.WriteLine("        |             |          ");
         Console.WriteLine("        ↓             ↓          ");
         Console.WriteLine("       3 ←---[CoG]---→ 4         ");
         Console.WriteLine("               B2                ");
@@ -201,7 +204,7 @@ public static class UICommon
         Console.WriteLine("> Press any key to continue...");
         Console.ReadKey();
     }
-    public static int PromptForChoice(string prompt, IList<string> options = null)
+    public static int PromptForChoice(string prompt, IList<string> options = null!)
     {
         Console.WriteLine(prompt);
         for (int i = 0; i < options.Count; i++) Console.WriteLine($"{i + 1}. {options[i]}");
@@ -226,19 +229,19 @@ public static class UICommon
             MessageWarning("Invalid input. Please enter Y or N.");
         }
     }
-    public static string PromptRequired(string prompt, string currentValue = null)
+    public static string PromptRequired(string prompt, string? currentValue = null)
     {
         while (true)
         {
             string displayValue = !string.IsNullOrWhiteSpace(currentValue) ? $"[{currentValue}]" : "";
             Console.Write($"║ {prompt,-40}: {displayValue} ");
             string? input = Console.ReadLine();
-            if (InputValidator.ValidateRequired(input, prompt, showMessage: false)) return input.Trim();
+            if (InputValidator.ValidateRequired(input, prompt, showMessage: false)) return input!.Trim();
             if (!string.IsNullOrWhiteSpace(currentValue)) return currentValue;
             Console.WriteLine("║   [!] This field is required. Please enter a value.");
         }
     }
-    public static string PromptOptional(string prompt, string currentValue = null)
+    public static string PromptOptional(string prompt, string? currentValue = null)
     {
         string displayValue = !string.IsNullOrWhiteSpace(currentValue) ? $"[{currentValue}]" : "";
         Console.Write($"║ {prompt,-40}: {displayValue} ");
