@@ -33,8 +33,8 @@ public static class FilingSystem
     public static string GetExecutableDirectory()
     {
         string exePath = Assembly.GetExecutingAssembly().Location;
-        string exeDir = Path.GetDirectoryName(exePath);
-        return exeDir;
+        string? exeDir = Path.GetDirectoryName(exePath);
+        return exeDir!;
     }
 
     // Combines executable directory with a relative filename or folder and returns full path
@@ -45,16 +45,20 @@ public static class FilingSystem
     }
 
     // List all projects in the base directory
-    public static List<string> GetAllProjectNames()
+    public static List<string?> GetAllProjectNames()
     {
         try
         {
-            return Directory.GetDirectories(BaseDirectory).Select(Path.GetFileName).Where(name => !string.IsNullOrEmpty(name)).ToList();
+            return Directory.
+                GetDirectories(BaseDirectory).
+                Select(Path.GetFileName).
+                Where(name => !string.IsNullOrEmpty(name)).
+                ToList();
         }
         catch (Exception ex)
         {
             //UI error message here
-            return new List<string>();
+            return new List<string?>();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using LiftLugCalc2.Core.Models;
+﻿using LiftLugCalc2.ConsoleFrontEnd;
+using LiftLugCalc2.Core.Models;
 
 namespace LiftLugCalc2.Core.FileOperations;
 
@@ -9,12 +10,13 @@ public static class TableLugLoader
     public static List<TableLug> LoadFromCsv()
     {
         var list = new List<TableLug>();
-        string csvPath = FilingSystem.GetFilePath(Path.Combine("Resources", Constants.FILE_LUGS));
+        string relativePath = Path.Combine("Core/Resources", Constants.FILE_LUGS);
+        string csvPath = FilingSystem.GetFilePath(relativePath);
 
         if (!File.Exists(csvPath))
         {
-            // UI error message here
-            return list; // Return empty list
+            UICommon.MessageError($"> Lug CSV not found at: {csvPath}");
+            return list;
         }
 
         foreach (var line in File.ReadLines(csvPath).Skip(1)) // skip header

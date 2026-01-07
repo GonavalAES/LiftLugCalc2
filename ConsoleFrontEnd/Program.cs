@@ -10,12 +10,23 @@ namespace LiftLugCalc2.ConsoleFrontEnd
     {
         static void Main(string[] args)
         {
-            UICommon.UISplash();
+            Console.SetWindowSize(Math.Min(120, Console.LargestWindowWidth), 40);
 
+            UICommon.UISplash();
             UICommon.MessageLoadRefData();
+
             var lugList = TableLugLoader.LoadFromCsv();
             var materialList = MaterialLoader.LoadFromCsv();
-            UICommon.MessageGood("-> Reference data loaded.");
+
+            if (lugList.Count == 0 || materialList.Count == 0)
+            {
+                string messageError = $"> Reference data loading failed. Lugs: {lugList.Count}, Materials: {materialList.Count}";
+                Console.ForegroundColor = ConsoleColor.Red;
+                UICommon.MessageError(messageError);
+                Console.ResetColor();
+                UICommon.PromptToContinue();
+                return;
+            }
 
             RunMainLoop(lugList, materialList);
 
@@ -27,7 +38,6 @@ namespace LiftLugCalc2.ConsoleFrontEnd
             bool exit = false;
             while (!exit)
             {
-                UICommon.UISplash();
                 UICommon.UIMainMenu();
 
                 Console.Write("\n> Select an option: ");
@@ -51,7 +61,9 @@ namespace LiftLugCalc2.ConsoleFrontEnd
                         exit = true;
                         break;
                     default:
+                        Console.ForegroundColor = ConsoleColor.Red;
                         UICommon.MessageWarning("-> Invalid option. Please try again.");
+                        Console.ResetColor();
                         UICommon.PromptToContinue();
                         break;
                 }
@@ -83,7 +95,9 @@ namespace LiftLugCalc2.ConsoleFrontEnd
 
             if (projectNames.Count == 0)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 UICommon.MessageWarning("-> No saved projects found.");
+                Console.ResetColor();
                 UICommon.PromptToContinue();
                 return;
             }
@@ -96,19 +110,23 @@ namespace LiftLugCalc2.ConsoleFrontEnd
 
             if (choice < 1 || choice > projectNames.Count)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 UICommon.MessageWarning("-> Invalid selection.");
+                Console.ResetColor();
                 UICommon.PromptToContinue();
                 return;
             }
 
-            string selectedName = projectNames[choice - 1];
-            string dataDir = FilingSystem.GetProjectSubDirectory(selectedName, "Data");
+            string? selectedName = projectNames[choice - 1];
+            string dataDir = FilingSystem.GetProjectSubDirectory(selectedName!, "Data");
             string projectFile = Path.Combine(dataDir, "project.txt");
 
             string content = FilingSystem.LoadTextFile(projectFile);
             if (string.IsNullOrWhiteSpace(content))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 UICommon.MessageError("-> Project file is empty or missing.");
+                Console.ResetColor();
                 return;
             }
 
@@ -173,13 +191,16 @@ namespace LiftLugCalc2.ConsoleFrontEnd
                     break;
                 }
 
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 UICommon.MessageWarning("-> Invalid choice. Please enter 1 or 2.");
+                Console.ResetColor();
             }
 
             while (true)
             {
                 UICommon.WeightCalculationFactor();
                 string wcfChoice = Console.ReadLine() ?? "";
+                Console.WriteLine();
 
                 wcf = PreliminaryCalculations.ChoosingWCF(wcfChoice);
 
@@ -187,7 +208,10 @@ namespace LiftLugCalc2.ConsoleFrontEnd
                 // but better confirm with the user:
                 if (wcfChoice is "1" or "2" or "3" or "4") break;
 
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 UICommon.MessageWarning("-> Invalid choice. Using default WCF. Press Enter to accept or any key to choose again.");
+                Console.ResetColor();
+
                 var key = Console.ReadKey(intercept: true);
                 Console.WriteLine();
 
@@ -208,7 +232,9 @@ namespace LiftLugCalc2.ConsoleFrontEnd
                 if (project.NumberPoints is >= 1 and <= 4)
                     break;
 
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 UICommon.MessageWarning("-> Number of points must be between 1 and 4.");
+                Console.ResetColor();
             }
 
             UICommon.LiftGeometryHeader();
@@ -221,27 +247,31 @@ namespace LiftLugCalc2.ConsoleFrontEnd
                     project.A2 = 0.0;
                     project.B1 = 0.0;
                     project.B2 = 0.0;
+                    Console.WriteLine();
                     break;
 
                 case 2:
                     UICommon.TwoPointLift();
-                    project.A1 = UICommon.PromptDouble("> Input value of A1 [m]:");
-                    project.A2 = UICommon.PromptDouble("> Input value of A2 [m]:");
+                    project.A1 = UICommon.PromptDouble("> Input value of A1 [m]");
+                    project.A2 = UICommon.PromptDouble("> Input value of A2 [m]");
+                    Console.WriteLine();
                     break;
 
                 case 3:
                     UICommon.ThreePointLift();
-                    project.A1 = UICommon.PromptDouble("> Input value of A1 [m]:");
-                    project.A2 = UICommon.PromptDouble("> Input value of A2 [m]:");
-                    project.B1 = UICommon.PromptDouble("> Input value of B1 [m]:");
+                    project.A1 = UICommon.PromptDouble("> Input value of A1 [m]");
+                    project.A2 = UICommon.PromptDouble("> Input value of A2 [m]");
+                    project.B1 = UICommon.PromptDouble("> Input value of B1 [m]");
+                    Console.WriteLine();
                     break;
 
                 case 4:
                     UICommon.FourPointLift();
-                    project.A1 = UICommon.PromptDouble("> Input value of A1 [m]:");
-                    project.A2 = UICommon.PromptDouble("> Input value of A2 [m]:");
-                    project.B1 = UICommon.PromptDouble("> Input value of B1 [m]:");
-                    project.B2 = UICommon.PromptDouble("> Input value of B2 [m]:");
+                    project.A1 = UICommon.PromptDouble("> Input value of A1 [m]");
+                    project.A2 = UICommon.PromptDouble("> Input value of A2 [m]");
+                    project.B1 = UICommon.PromptDouble("> Input value of B1 [m]");
+                    project.B2 = UICommon.PromptDouble("> Input value of B2 [m]");
+                    Console.WriteLine();
                     break;
             }
         }
@@ -259,6 +289,8 @@ namespace LiftLugCalc2.ConsoleFrontEnd
                 UICommon.MessageWarning("-> Invalid calculation type.");
                 UICommon.PromptToContinue();
             }
+
+            Console.WriteLine();
         }
 
         private static Material SelectMaterial(IReadOnlyList<Material> materials)
@@ -267,8 +299,18 @@ namespace LiftLugCalc2.ConsoleFrontEnd
             foreach (var m in materials)
                 Console.WriteLine($"{m.MaterialID,3} | {m.Designation,-12} | {m.YieldStrength,8:N0} | {m.TensileStrength,8:N0}");
 
-            int matId = UICommon.PromptInt("> Select Material ID:");
-            return materials.First(m => m.MaterialID == matId);
+            while (true)
+            {
+                int matId = UICommon.PromptInt("Select Material ID");
+
+                var material = materials.FirstOrDefault(m => m.MaterialID == matId);
+                if (material is not null) return material;
+
+                string message = "> Invalid Material ID. Please select one of the listed IDs.";
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                UICommon.MessageWarning(message);
+                Console.ResetColor();
+            }
         }
 
         private static TableLug SelectLug(IReadOnlyList<TableLug> lugs)
@@ -277,8 +319,19 @@ namespace LiftLugCalc2.ConsoleFrontEnd
             foreach (var l in lugs)
                 Console.WriteLine($"{l.LugID,3} | {l.LugType,4} | {l.LugWLL,10:N1}");
 
-            int lugId = UICommon.PromptInt("> Select Lug ID:");
-            return lugs.First(l => l.LugID == lugId);
+            while (true)
+            {
+                int lugId = UICommon.PromptInt("Select Lug ID");
+
+                var lug = lugs.FirstOrDefault(l => l.LugID == lugId);
+                if (lug is not null)
+                    return lug;
+
+                string message = "> Invalid Lug ID. Please select one of the listed IDs.";
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                UICommon.MessageWarning(message);
+                Console.ResetColor();
+            }
         }
 
 
@@ -296,10 +349,11 @@ namespace LiftLugCalc2.ConsoleFrontEnd
 
             ShowForwardResult(project, lug, material, result);
 
+            Console.WriteLine();
+
             if (UICommon.PromptSaveProject()) SaveProject(project);
-
             if (UICommon.PromptYesNo("> Do you want to save a calculation report?")) SaveForwardReport(project, lug, material, result);
-
+            Console.WriteLine();
         }
 
         private static void ShowForwardResult(ProjectInput project, TableLug lug, Material material, CalculationResult result)
@@ -341,6 +395,7 @@ namespace LiftLugCalc2.ConsoleFrontEnd
             ShowReverseResult(project, material, selection);
 
             if (UICommon.PromptSaveProject()) SaveProject(project);
+            Console.WriteLine();
             UICommon.PromptToContinue();
         }
 
@@ -368,6 +423,7 @@ namespace LiftLugCalc2.ConsoleFrontEnd
 
             if (best.Result.Pass) UICommon.OverallResultPass();
             else UICommon.OverallResultFail();
+            Console.WriteLine();
         }
 
 
@@ -382,6 +438,7 @@ namespace LiftLugCalc2.ConsoleFrontEnd
             FilingSystem.SaveTextFile(projectFile, text);
 
             UICommon.MessageSuccess($"Project saved to: {projectFile}");
+            Console.WriteLine();
         }
 
         private static void SaveForwardReport(ProjectInput project, TableLug lug, Material material, CalculationResult result)
@@ -396,6 +453,7 @@ namespace LiftLugCalc2.ConsoleFrontEnd
             FilingSystem.SaveTextFile(reportFile, reportText);
 
             UICommon.MessageSuccess($"-> Report saved to: {reportFile}");
+            Console.WriteLine();
         }
 
 

@@ -18,7 +18,7 @@ public sealed class ConsoleUI
     {
         while (true)
         {
-            Console.Clear();
+            //Console.Clear();
             ShowMainMenu();
             var choice = (Console.ReadLine() ?? "").Trim();
 
@@ -47,7 +47,8 @@ public sealed class ConsoleUI
         Console.WriteLine("1) Forward calculation (check selected lug)");
         Console.WriteLine("2) Reverse calculation (suggest lug)");
         Console.WriteLine("Q) Quit");
-        Console.Write("Select option: ");
+        Console.Write("> Select option: ");
+        Console.WriteLine();
     }
 
     private void RunForwardCalculation()
@@ -170,7 +171,9 @@ public sealed class ConsoleUI
 
         if (selection.Best is null)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("No suitable lug found in table for this load and material.");
+            Console.ResetColor();
             return;
         }
 
