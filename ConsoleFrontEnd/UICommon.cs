@@ -261,7 +261,7 @@ public static class UICommon
         {
             string displayValue = !string.IsNullOrWhiteSpace(currentValue) ? $"[{currentValue}]" : "";
 
-            Console.Write($"{prompt}: {displayValue} ");
+            Console.Write($"{prompt} {displayValue} ");
             string? input = Console.ReadLine();
 
             if (InputValidator.ValidateRequired(input, prompt, showMessage: false)) return input!.Trim();
@@ -276,7 +276,7 @@ public static class UICommon
     {
         string displayValue = !string.IsNullOrWhiteSpace(currentValue) ? $"[{currentValue}]" : "";
 
-        Console.Write($"{prompt}: {displayValue} ");
+        Console.Write($"{prompt} {displayValue} ");
         string? input = Console.ReadLine();
 
         return string.IsNullOrWhiteSpace(input) ? currentValue ?? "" : input.Trim();
@@ -285,7 +285,7 @@ public static class UICommon
     {
         while (true)
         {
-            Console.Write($"{prompt}: ");
+            Console.Write($"{prompt} ");
             string? input = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(input)) return defaultDate;
@@ -304,7 +304,7 @@ public static class UICommon
             // If there's a current value, show it in brackets as a hint
             string displayValue = currentValue.HasValue && currentValue.Value != 0 ? $"[{currentValue.Value:N1}]" : "";
 
-            Console.Write($"{prompt}: {displayValue} ");
+            Console.Write($"{prompt} {displayValue} ");
             string? input = Console.ReadLine();
 
             // If user just presses Enter and there's a current value, keep it
@@ -323,7 +323,7 @@ public static class UICommon
             // If there's a current value, show it in brackets as a hint
             string displayValue = currentValue.HasValue && currentValue.Value != 0 ? $"[{currentValue.Value}]" : "";
 
-            Console.Write($"{prompt}: {displayValue} ");
+            Console.Write($"{prompt} {displayValue} ");
             string? input = Console.ReadLine();
 
             // If user just presses Enter and there's a current value, keep it
