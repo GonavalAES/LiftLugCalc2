@@ -40,17 +40,17 @@ public static class MaterialLoader
             }
             catch (FormatException ex)
             {
-                // UI error message here
+                UICommon.MessageError($"> Material CSV parse error (line '{line}'): {ex.Message}");
                 continue;
             }
             catch (IndexOutOfRangeException)
             {
-                // UI error message here
+                UICommon.MessageError($"> Material CSV malformed (line '{line}' - missing columns)");
                 continue;
             }
             catch (Exception ex)
             {
-                // UI error message here
+                UICommon.MessageError($"> Material CSV unexpected error (line '{line}'): {ex.Message}");
                 continue;
             }
         }

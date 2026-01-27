@@ -36,6 +36,7 @@
         // ========== WELD GEOMETRY LIMITS ==========
         public const double WELD_THROAT_MAX_RATIO = 0.7;    // Max weld throat as ratio of plate thickness
         public const double WELD_THROAT_MIN = 3.0;          // Minimum weld throat thickness (mm)
+        public const double MIN_EDGE_DISTANCE_FACTOR = 0.8; // NORSOK minimum
 
         // ========== UNIT CONVERSIONS ==========
         public const double KG_TO_KN = GRAVITY / 1000.0;    // Convert kg to kN

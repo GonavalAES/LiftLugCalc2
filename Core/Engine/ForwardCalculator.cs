@@ -1,4 +1,5 @@
-﻿using LiftLugCalc2.Core.Models;
+﻿using LiftLugCalc2.ConsoleFrontEnd;
+using LiftLugCalc2.Core.Models;
 
 namespace LiftLugCalc2.Core.Engine;
 
@@ -62,13 +63,13 @@ public static class ForwardCalculator
         {
             if (lug.LugWeldThroat > Constants.WELD_THROAT_MAX_RATIO * t)
             {
-                // UI Warning
+                UICommon.MessageWarning($"Main weld throat {lug.LugWeldThroat:F1}mm > {Constants.WELD_THROAT_MAX_RATIO:P0} × plate {t:F0}mm - (Too thick)");
                 isValid = false;
             }
 
             if (lug.LugWeldThroat < Constants.WELD_THROAT_MIN)
             {
-                // UI Warning
+                UICommon.MessageError($"Main weld throat {lug.LugWeldThroat:F1}mm < minimum {Constants.WELD_THROAT_MIN:F1}mm - (Too thin)");
                 isValid = false;
             }
         }
@@ -78,29 +79,38 @@ public static class ForwardCalculator
 
             if (lug.WeldThroatCheek > Constants.WELD_THROAT_MAX_RATIO * tc)
             {
-                // UI Warning
+                UICommon.MessageWarning($"Cheek weld throat {lug.WeldThroatCheek:F1}mm > {Constants.WELD_THROAT_MAX_RATIO:P0} × cheek {tc:F0}mm");
                 isValid = false;
             }
             if (lug.WeldThroatCheek < Constants.WELD_THROAT_MIN)
             {
-                // UI Warning
+                UICommon.MessageWarning($"Cheek weld throat {lug.WeldThroatCheek:F1}mm < minimum {Constants.WELD_THROAT_MIN:F1}mm");
                 isValid = false;
             }
         }
 
         // Check hole diameter vs lug radius
-        if (lug.DiameterHole >= 2.0 * lug.RadiusLug)
+        if (lug.DiameterHole >= 1.8 * lug.RadiusLug)
         {
-            // UI Warning
+            UICommon.MessageError($"Hole {lug.DiameterHole:F1}mm > 1.8× lug radius {lug.RadiusLug:F1}mm - (Hole too large, risk of brittle fracture)");
             isValid = false;
         }
 
         // Check edge distance (hole to lug edge)
+        double minEdgeDistance = Constants.MIN_EDGE_DISTANCE_FACTOR * lug.DiameterHole;
         double edgeDistance = lug.RadiusLug - (lug.DiameterHole * 0.5);
-        if (edgeDistance < lug.DiameterHole)
+
+        if (edgeDistance < minEdgeDistance)
         {
-            // UI Warning
+            UICommon.MessageError($"Edge distance {edgeDistance:F1}mm < min {minEdgeDistance:F1}mm - Critical");
+
             isValid = false;
+        }
+        else if (edgeDistance < 1.0 * lug.DiameterHole)
+        {
+            UICommon.MessageWarning($"Edge distance {edgeDistance:F1}mm - Marginal (0.8-1.0×d)");
+            UICommon.MessageWarning("Consider increasing lug size.");
+            Console.WriteLine();
         }
 
         results.WeldGeometryOK = isValid;

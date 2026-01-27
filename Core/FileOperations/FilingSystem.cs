@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using LiftLugCalc2.ConsoleFrontEnd;
+
+using System.Reflection;
 
 namespace LiftLugCalc2.Core.FileOperations;
 
@@ -57,7 +59,7 @@ public static class FilingSystem
         }
         catch (Exception ex)
         {
-            //UI error message here
+            UICommon.MessageError($"> Project listing failed: {ex.Message}");
             return new List<string?>();
         }
     }

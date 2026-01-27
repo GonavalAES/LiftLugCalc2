@@ -22,8 +22,8 @@ public static class UICommon
         Console.WriteLine("╠══════════════════════╣");
         Console.WriteLine("║ 1. Create Project    ║");
         Console.WriteLine("║ 2. Open Project      ║");
-        Console.WriteLine("║ 3. TEST APPLICATION  ║");
-        Console.WriteLine("║ 4. Exit              ║");
+        //Console.WriteLine("║ 3. TEST APPLICATION  ║");
+        Console.WriteLine("║ 3. Exit              ║");
         Console.WriteLine("╚══════════════════════╝");
         Console.WriteLine();
     }
@@ -54,36 +54,45 @@ public static class UICommon
         Console.WriteLine("║           LIFTING GEOMETRY CONFIGURATION            ║");
         Console.WriteLine("║                                                     ║");
         Console.WriteLine("║ (Indicate distances between CoG and Lifting Points) ║");
+        Console.WriteLine("║        (Representation viewed from above)           ║");
         Console.WriteLine("╚═════════════════════════════════════════════════════╝");
         Console.WriteLine();
     }
     public static void TwoPointLift()
     {
-        Console.WriteLine("     1 ------- CoG ------- 2");
-        Console.WriteLine("          A1          A2");
+        Console.WriteLine("    1 <------> CoG <------> 2");
+        Console.WriteLine("         A1           A2");
+        Console.WriteLine();
+        Console.WriteLine(" A1, A2: Longitudinal distances from COG to 1 and to 2, respectively");
         Console.WriteLine();
     }
     public static void ThreePointLift()
     {
-        Console.WriteLine("     1 ----- CoG ----- 2");
-        Console.WriteLine("         A1   |    A2");
-        Console.WriteLine("              |");
-        Console.WriteLine("            B1|");
-        Console.WriteLine("              |");
-        Console.WriteLine("              3");
+        Console.WriteLine("    1 <------> CoG <------> 2");
+        Console.WriteLine("         A1     |     A2");
+        Console.WriteLine("                |");
+        Console.WriteLine("             B1 |");
+        Console.WriteLine("                |");
+        Console.WriteLine("                3");
+        Console.WriteLine();
+        Console.WriteLine(" A1, A2: Longitudinal distances from COG to 1 and to 2, respectively");
+        Console.WriteLine(" B1: Transverse distance from COG to 3");
         Console.WriteLine();
     }
     public static void FourPointLift()
     {
-        Console.WriteLine("               B1");
-        Console.WriteLine("       1 ----[CoG]---- 2");
-        Console.WriteLine("       |               |");
-        Console.WriteLine("       |               |");
-        Console.WriteLine("    A1[CoG]   CoG    [CoG]A2");
-        Console.WriteLine("       |               |");
-        Console.WriteLine("       |               |");
-        Console.WriteLine("       3 ----[CoG]---- 4");
-        Console.WriteLine("               B2");
+        Console.WriteLine("    1 --------- o --------- 2");
+        Console.WriteLine("                |            ");
+        Console.WriteLine("             B1 |            ");
+        Console.WriteLine("                |            ");
+        Console.WriteLine("    <-- A1 --> CoG <-- A2 -->");
+        Console.WriteLine("                |            ");
+        Console.WriteLine("             B2 |            ");
+        Console.WriteLine("                |            ");
+        Console.WriteLine("    3 --------- o --------- 4");
+        Console.WriteLine();
+        Console.WriteLine(" A1, A2: Longitudinal distances from COG to 1/3 and to 2/4, respectively");
+        Console.WriteLine(" B1, B2: Transverse distances from COG to 1/2 and to 3/4, respectively");
         Console.WriteLine();
     }
     public static void PromptTypeCalculation()
@@ -117,15 +126,114 @@ public static class UICommon
     }
     public static void WeightCalculationFactor()
     {
-
+        Console.WriteLine();
         Console.WriteLine("Select weight determination method:");
-        Console.WriteLine($"> 1.: Weighing / measured ±3% →                         WCF = {Constants.WCF_MEASURED}");
-        Console.WriteLine($"> 2.: Detailed calc from updated drawings →             WCF = {Constants.WCF_DETAILED_UPDATED}");
-        Console.WriteLine($"> 3.: Detailed calc from older/less accurate drawings → WCF = {Constants.WCF_DETAILED_OLDER}");
-        Console.WriteLine($"> 4.: Standard-mandated →                               WCF = {Constants.WCF_STANDARD}");
+        Console.WriteLine("------------------------------------------------------------------------");
+        Console.WriteLine($"> 1 -> Weighing / measured ±3%                           WCF = {Constants.WCF_MEASURED}");
+        Console.WriteLine("------------------------------------------------------------------------");
+        Console.WriteLine($"> 2 -> Detailed calc from updated drawings               WCF = {Constants.WCF_DETAILED_UPDATED}");
+        Console.WriteLine("------------------------------------------------------------------------");
+        Console.WriteLine($"> 3 -> Detailed calc from older/less accurate drawings   WCF = {Constants.WCF_DETAILED_OLDER}");
+        Console.WriteLine("------------------------------------------------------------------------");
+        Console.WriteLine($"> 4 -> Standard-mandated                                 WCF = {Constants.WCF_STANDARD}");
+        Console.WriteLine("------------------------------------------------------------------------");
         Console.WriteLine();
         Console.Write("Choice: ... ");
     }
+    public static void DrawLugType(int lugType)
+    {
+        Console.WriteLine();
+        switch (lugType)
+        {
+            case 0:
+                Console.WriteLine("╔════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║           Type 0 - Direct connection lug               ║");
+                Console.WriteLine("║   Rounded lug plate with central hole for hook/chain   ║");
+                Console.WriteLine("╠════════════════════════════════════════════════════════╣");
+                Console.WriteLine("║                                                        ║");
+                Console.WriteLine("║       RadiusLug -->   @@@@@@@@                         ║");
+                Console.WriteLine("║                     @   @@@    @   <-- ThicknessPlate  ║");
+                Console.WriteLine("║                   @@  @     @  @@                      ║");
+                Console.WriteLine("║           ^---- @    @       @  @  <-- DiameterHole    ║");
+                Console.WriteLine("║ HCentHole |    @    @@@@@@@@@    @                     ║");
+                Console.WriteLine("║           v__  @@@@@@@@@@@@@@@@@@@ <-- Connected/Part  ║");
+                Console.WriteLine("║                <---------------- >     of Structural   ║");
+                Console.WriteLine("║                    LengthLug           Element         ║");
+                Console.WriteLine("║                                                        ║");
+                Console.WriteLine("╚════════════════════════════════════════════════════════╝");
+                Console.WriteLine();
+                break;
+            case 1:
+                Console.WriteLine("╔════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                Type 1 - Single plate lug               ║");
+                Console.WriteLine("╠════════════════════════════════════════════════════════╣");
+                Console.WriteLine("║                                                        ║");
+                Console.WriteLine("║       RadiusLug -->   @@@@@@@@                         ║");
+                Console.WriteLine("║                     @          @    <-- ThicknessPlate ║");
+                Console.WriteLine("║                   @@    @@@    @@                      ║");
+                Console.WriteLine("║           ^---- @     @   @     @  <-- DiameterHole    ║");
+                Console.WriteLine("║ HCentHole |    @       @@@       @                     ║");
+                Console.WriteLine("║           v__  @@@@@@@@@@@@@@@@@@@                     ║");
+                Console.WriteLine("║                <---------------- >                     ║");
+                Console.WriteLine("║                    LengthLug                           ║");
+                Console.WriteLine("║                                                        ║");
+                Console.WriteLine("╚════════════════════════════════════════════════════════╝");
+                Console.WriteLine();
+                break;
+            case 2:
+                Console.WriteLine("╔════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                Type 2 - Cheek plate lug                ║");
+                Console.WriteLine("╠════════════════════════════════════════════════════════╣");
+                Console.WriteLine("║                                                        ║");
+                Console.WriteLine("║       RadiusLug -->   @@@@@@@@                         ║");
+                Console.WriteLine("║                     @ *******  @   <-- ThicknessPlate  ║");
+                Console.WriteLine("║                   @@ ***@@@*** @@  <-- Cheek Thickness ║");
+                Console.WriteLine("║           ^---- @  ***@@  @**** @  <-- DiameterHole    ║");
+                Console.WriteLine("║ HCentHole |    @    ***@@@****   @                     ║");
+                Console.WriteLine("║           v__  @@@@@@@@@@@@@@@@@@@                     ║");
+                Console.WriteLine("║                <---------------- >                     ║");
+                Console.WriteLine("║                    LengthLug                           ║");
+                Console.WriteLine("║                                                        ║");
+                Console.WriteLine("╚════════════════════════════════════════════════════════╝");
+                Console.WriteLine();
+                break;
+            case 3:
+                Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                   Type 3 - Boss lug                   ║");
+                Console.WriteLine("╠═══════════════════════════════════════════════════════╣");
+                Console.WriteLine("║                                                       ║");
+                Console.WriteLine("║       RadiusLug -->     @@@@                          ║");
+                Console.WriteLine("║                       @@   @@@     <-- ThicknessPlate ║");
+                Console.WriteLine("║                   @@**@@   @@**@@  <-- Boss Thickness ║");
+                Console.WriteLine("║           ^---- @   **@   @***  @  <-- DiameterHole   ║");
+                Console.WriteLine("║  HCentHol |    @     **@@@***    @                    ║");
+                Console.WriteLine("║           v__  @@@@@@@@@@@@@@@@@@@                    ║");
+                Console.WriteLine("║                <---------------- >                    ║");
+                Console.WriteLine("║                    LengthLug                          ║");
+                Console.WriteLine("║                                                       ║");
+                Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
+                Console.WriteLine();
+                break;
+            default:
+                Console.WriteLine("[Unknown Lug Type]");
+                break;
+        }
+        Console.WriteLine();
+    }
+    public static void FinalChoicesMenu()
+    {
+        Console.WriteLine("╔════════════════════════════╗");
+        Console.WriteLine("║       WHAT IS NEXT?        ║");
+        Console.WriteLine("╠════════════════════════════╣");
+        Console.WriteLine("║ 1. View detailed report    ║");
+        Console.WriteLine("║ 2. Save report file        ║");
+        Console.WriteLine("║ 3. Save project            ║");
+        Console.WriteLine("║ 4. Perform new calculation ║");
+        Console.WriteLine("║ Q. Back to Main Menu       ║");
+        Console.WriteLine("╚════════════════════════════╝");
+        Console.WriteLine();
+    }
+
     public static void ResultsHeader()
     {
         Console.WriteLine("╔═════════════════════════════════════════════════════════╗");
@@ -340,10 +448,21 @@ public static class UICommon
     public static void PromptForWeight()
     {
         Console.WriteLine("Enter lifting basis:");
-        Console.WriteLine("1. I know ONLY the object's actual weight");
-        Console.WriteLine("2. I know the object's Working Load Limit (WLL)");
+        Console.WriteLine("1 -> I know ONLY the object's actual weight");
+        Console.WriteLine("2 -> I know the object's Working Load Limit (WLL)");
         Console.WriteLine();
         Console.Write("> ... ");
+    }
+    public static bool PromptSaveReport()
+    {
+        DrawSeparator();
+        Console.WriteLine("Do you want to save the report?");
+        Console.Write("> Enter (Y)es or (N)o: ");
+
+        string? input = Console.ReadLine()?.Trim().ToUpper();
+        Console.WriteLine();
+
+        return input == "Y" || input == "YES";
     }
     public static bool PromptSaveProject()
     {

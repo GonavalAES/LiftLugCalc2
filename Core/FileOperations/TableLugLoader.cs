@@ -48,17 +48,17 @@ public static class TableLugLoader
             }
             catch (FormatException ex)
             {
-                // UI error message here
+                UICommon.MessageError($"> Lug CSV parse error (line '{line}'): {ex.Message}");
                 continue;
             }
             catch (IndexOutOfRangeException)
             {
-                // UI error message here
+                UICommon.MessageError($"> Lug CSV malformed (line '{line}' - missing columns)");
                 continue;
             }
             catch (Exception ex)
             {
-                // UI error message here
+                UICommon.MessageError($"> Lug CSV unexpected error (line '{line}'): {ex.Message}");
                 continue;
             }
         }

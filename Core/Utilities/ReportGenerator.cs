@@ -1,14 +1,13 @@
-﻿using LiftLugCalc2.Core.Models;
+﻿using LiftLugCalc2.Core.FileOperations;
+using LiftLugCalc2.Core.Models;
 
 using System.Text;
 
 namespace LiftLugCalc2.Core.Utilities;
 
-public static class ReportFormatter
+public static class ReportGenerator
 {
-    public static string BuildCalculationReport(
-        ProjectInput project,
-        CalculationResult calcResult)
+    public static string GenerateDetailedReport(ProjectInput project, CalculationResult result)
     {
         var sb = new StringBuilder();
 
@@ -21,7 +20,7 @@ public static class ReportFormatter
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine($"Project Name    : {project.Name}");
         sb.AppendLine($"Created By      : {project.CreatedBy}");
-        sb.AppendLine($"Date            : {FormatDate(project.Date)}");
+        sb.AppendLine($"Date            : {Formatter.FormatDate(project.Date)}");
         sb.AppendLine($"Revision        : {project.Revision}");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine();
@@ -37,42 +36,42 @@ public static class ReportFormatter
 
         sb.AppendLine("CALCULATION RESULTS");
         sb.AppendLine("-----------------------------------------------------------");
-        sb.AppendLine($"Analysis Type   : {calcResult.CalculationType}");
-        sb.AppendLine($"Applied Load    : {calcResult.AppliedLoad:N1} kN");
-        sb.AppendLine($"Overall Result  : {(calcResult.Pass ? "PASSED" : "FAILED")}");
-        sb.AppendLine($"Minimum FS      : {calcResult.MinimumFS:N1}");
+        sb.AppendLine($"Analysis Type   : {result.CalculationType}");
+        sb.AppendLine($"Applied Load    : {result.AppliedLoad:N1} kN");
+        sb.AppendLine($"Overall Result  : {(result.Pass ? "PASSED" : "FAILED")}");
+        sb.AppendLine($"Minimum FS      : {result.MinimumFS:N1}");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine();
 
         sb.AppendLine("CAPACITY RESULTS");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine("Tension:");
-        sb.AppendLine($"  Net Section Area : {calcResult.NetSectionArea:N1} mm²");
-        sb.AppendLine($"  Capacity         : {calcResult.TensionCapacity:N1} kN");
-        sb.AppendLine($"  Factor of Safety : {calcResult.FSTension:N1}");
+        sb.AppendLine($"  Net Section Area : {result.NetSectionArea:N1} mm²");
+        sb.AppendLine($"  Capacity         : {result.TensionCapacity:N1} kN");
+        sb.AppendLine($"  Factor of Safety : {result.FSTension:N1}");
         sb.AppendLine();
 
         sb.AppendLine("Shear:");
-        sb.AppendLine($"  Capacity         : {calcResult.ShearCapacity:N1} kN");
-        sb.AppendLine($"  Factor of Safety : {calcResult.FSShear:N1}");
+        sb.AppendLine($"  Capacity         : {result.ShearCapacity:N1} kN");
+        sb.AppendLine($"  Factor of Safety : {result.FSShear:N1}");
         sb.AppendLine();
 
         sb.AppendLine("Bearing:");
-        sb.AppendLine($"  Capacity         : {calcResult.BearingCapacity:N1} kN");
-        sb.AppendLine($"  Factor of Safety : {calcResult.FSBearing:N1}");
+        sb.AppendLine($"  Capacity         : {result.BearingCapacity:N1} kN");
+        sb.AppendLine($"  Factor of Safety : {result.FSBearing:N1}");
         sb.AppendLine();
 
         sb.AppendLine("Tear-Out:");
-        sb.AppendLine($"  Capacity         : {calcResult.TearOutCapacity:N1} kN");
-        sb.AppendLine($"  Factor of Safety : {calcResult.FSTearOut:N1}");
+        sb.AppendLine($"  Capacity         : {result.TearOutCapacity:N1} kN");
+        sb.AppendLine($"  Factor of Safety : {result.FSTearOut:N1}");
         sb.AppendLine();
 
-        if (calcResult.WeldCapacity > 0)
+        if (result.WeldCapacity > 0)
         {
             sb.AppendLine("Weld:");
-            sb.AppendLine($"  Capacity         : {calcResult.WeldCapacity:N1} kN");
-            sb.AppendLine($"  Factor of Safety : {calcResult.FSWeld:N1}");
-            sb.AppendLine($"  Geometry Check   : {(calcResult.WeldGeometryOK ? "OK" : "NOT OK")}");
+            sb.AppendLine($"  Capacity         : {result.WeldCapacity:N1} kN");
+            sb.AppendLine($"  Factor of Safety : {result.FSWeld:N1}");
+            sb.AppendLine($"  Geometry Check   : {(result.WeldGeometryOK ? "OK" : "NOT OK")}");
             sb.AppendLine();
         }
         sb.AppendLine("-----------------------------------------------------------");
@@ -84,9 +83,5 @@ public static class ReportFormatter
 
         return sb.ToString();
     }
-
-    public static string FormatDate(string dateString)
-    {
-        return DateTime.TryParse(dateString, out var parsed) ? parsed.ToString("dd-MM-yyyy") : DateTime.Today.ToString("dd-MM-yyyy");
-    }
 }
+

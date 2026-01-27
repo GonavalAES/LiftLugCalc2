@@ -99,39 +99,10 @@ public static class Formatter
 
             return project;
         }
-
     }
 
-    public static class ReportFormatter
+    public static string FormatDate(string dateString)
     {
-        public static string ForwardReport(ProjectInput project, TableLug lug, Material material, CalculationResult result)
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine("LIFTING LUG CALCULATION REPORT");
-            sb.AppendLine("[PROJECT]");
-            sb.AppendLine($"Name    : {project.Name}");
-            sb.AppendLine($"WLL     : {project.WLL:N1} kg (design)");
-            sb.AppendLine();
-
-            sb.AppendLine("[CONFIGURATION]");
-            sb.AppendLine($"Lug ID      : {lug.LugID}");
-            sb.AppendLine($"Lug Type    : {lug.LugType}");
-            sb.AppendLine($"Lug WLL     : {lug.LugWLL} kg");
-            sb.AppendLine($"Material    : {material.Designation} (fy = {material.YieldStrength} MPa)");
-            sb.AppendLine();
-
-            sb.AppendLine("[RESULTS]");
-            sb.AppendLine($"Applied Load : {result.AppliedLoad:N1} kN");
-            sb.AppendLine($"FS Tension   : {result.FSTension:N1}");
-            sb.AppendLine($"FS Shear     : {result.FSShear:N1}");
-            sb.AppendLine($"FS Bearing   : {result.FSBearing:N1}");
-            sb.AppendLine($"FS Tear-Out  : {result.FSTearOut:N1}");
-            sb.AppendLine($"FS Weld      : {result.FSWeld:N1}");
-            sb.AppendLine($"Min FS       : {result.MinimumFS:N1}");
-            sb.AppendLine($"Pass         : {(result.Pass ? "YES" : "NO")}");
-
-            return sb.ToString();
-        }
+        return DateTime.TryParse(dateString, out var parsed) ? parsed.ToString("dd-MM-yyyy") : DateTime.Today.ToString("dd-MM-yyyy");
     }
 }
