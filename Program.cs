@@ -1,6 +1,7 @@
-﻿using LiftLugCalc2.Core.FileOperations;
+﻿using LiftLugCalc2.ConsoleFrontEnd;
+using LiftLugCalc2.Core.FileOperations;
 
-namespace LiftLugCalc2.ConsoleFrontEnd
+namespace LiftLugCalc2
 {
     public static class Program
     {

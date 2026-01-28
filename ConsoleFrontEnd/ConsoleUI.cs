@@ -294,9 +294,9 @@ public sealed class ConsoleUI
             project.UserMaterialID = material.MaterialID;
         }
 
-        ShowReverseResult(project, material, selection);
-
         var result = selection.Best?.Result;
+
+        ShowReverseResult(project, material, selection);
         ShowPostCalculationMenu(project, result!);
 
         Console.WriteLine();
@@ -392,6 +392,7 @@ public sealed class ConsoleUI
 
         ShowCommonInput(project, material, result);
         Console.WriteLine($"> Lug      : ID {lug.LugID}, Type {lug.LugType}, WLL = {lug.LugWLL} kg");
+        UICommon.DrawLugType(lug.LugType);
         Console.WriteLine();
         Console.WriteLine($"> FS Tension : {result.FSTension:N1}");
         Console.WriteLine($"> FS Shear   : {result.FSShear:N1}");
@@ -421,6 +422,8 @@ public sealed class ConsoleUI
 
         var best = selection.Best;
         Console.WriteLine($"> Suggested Lug ID: {best.Lug.LugID}, Type {best.Lug.LugType}, WLL = {best.Lug.LugWLL} kg");
+        UICommon.DrawLugType(best.Lug.LugType);
+        Console.WriteLine();
         Console.WriteLine($"> Minimum FS      : {best.Result.MinimumFS:N1}");
         Console.WriteLine($"> Result          : {(best.Result.Pass ? "PASS" : "FAIL")}");
         Console.WriteLine();

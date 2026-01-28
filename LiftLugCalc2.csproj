@@ -5,17 +5,13 @@
     <TargetFramework>net10.0-windows7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <StartupObject>LiftLugCalc2.ConsoleFrontEnd.Program</StartupObject>
+    <StartupObject>LiftLugCalc2.Program</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-  </PropertyGroup>
-
+	
   <ItemGroup>
     <None Remove="Core\Resources\LugType.csv" />
     <None Remove="Core\Resources\Materials.csv" />

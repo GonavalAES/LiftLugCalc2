@@ -42,7 +42,12 @@ public static class ReportGenerator
         sb.AppendLine($"Minimum FS      : {result.MinimumFS:N1}");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine();
-
+        sb.AppendLine("LUG CHARACTERISTICS");
+        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine($"Lug ID          : {project.UserLugID}");
+        sb.AppendLine($"");
+        sb.AppendLine($"");
+        sb.AppendLine($"");
         sb.AppendLine("CAPACITY RESULTS");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine("Tension:");
@@ -77,9 +82,9 @@ public static class ReportGenerator
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine();
 
-        sb.AppendLine("╔═════════════════");
+        sb.AppendLine("╔═══════════════════════════════════════════════════╗");
         sb.AppendLine($"║Report generated: {DateTime.Now:dd-MM-yyyy HH:mm:ss}");
-        sb.AppendLine("╚═════════════════");
+        sb.AppendLine("╚═══════════════════════════════════════════════════╝");
 
         return sb.ToString();
     }
