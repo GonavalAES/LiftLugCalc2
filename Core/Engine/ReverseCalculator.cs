@@ -18,6 +18,11 @@ public static class ReverseCalculator
         // 2. Evaluate all lugs in the table
         foreach (var lug in lugTable)
         {
+            // Quick check: total table capacity vs applied load
+            double totalTableCapacity = lug.LugWLL * project.NumberPoints;
+            if (totalTableCapacity < project.WLL * 1.1)  // 10% margin
+                continue;  // Skip - table WLL too small
+
             var forwardInput = new ForwardInput(project, lug, material);
             var results = ForwardCalculator.Run(forwardInput, choice);
 
