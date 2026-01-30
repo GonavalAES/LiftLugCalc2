@@ -1,4 +1,5 @@
 ﻿using LiftLugCalc2.ConsoleFrontEnd;
+using LiftLugCalc2.Core.Models;
 
 using System.Reflection;
 
@@ -8,54 +9,36 @@ public static class FilingSystem
 {
     public static string BaseDirectory { get; }
 
+    // COnstructor to set up base directory
     static FilingSystem()
     {
-        BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LiftingLugCalc2");
-        EnsureDirectoryExists(BaseDirectory);
+        BaseDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Constants.BASE_DIRECTORY);
+        Directory.CreateDirectory(BaseDirectory);
     }
 
-    public static string GetProjectDirectory(string projectName) => Path.Combine(BaseDirectory, projectName);
-
-    public static string GetProjectSubDirectory(string projectName, string subDirName) =>
-        Path.Combine(GetProjectDirectory(projectName), subDirName);
-
-    public static void EnsureProjectDirectoriesExist(string projectName)
+    // Full path to project folder (creates if missing)
+    public static string GetProjectDirectory(string projectName)
     {
-        string[] subDirs = { "Logs", "Data", "Results" };
-        foreach (var subDir in subDirs)
-            EnsureDirectoryExists(GetProjectSubDirectory(projectName, subDir));
+        string projectDir = Path.Combine(BaseDirectory, projectName);
+        Directory.CreateDirectory(projectDir);
+
+        return projectDir;
     }
 
-    public static void EnsureDirectoryExists(string path)
-    {
-        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-    }
+    public static string EnsureProjectDirectory(string projectName) => GetProjectDirectory(projectName);
 
     // Gets the folder path where the currently executing assembly (the .exe) resides
-    public static string GetExecutableDirectory()
-    {
-        string exePath = Assembly.GetExecutingAssembly().Location;
-        string? exeDir = Path.GetDirectoryName(exePath);
-        return exeDir!;
-    }
+    public static string GetExecutableDirectory() => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? ".";
 
     // Combines executable directory with a relative filename or folder and returns full path
-    public static string GetFilePath(string relativePath)
-    {
-        string baseDir = GetExecutableDirectory();
-        return Path.Combine(baseDir ?? ".", relativePath);
-    }
+    public static string GetFilePath(string relativePath) => Path.Combine(GetExecutableDirectory(), relativePath);
 
     // List all projects in the base directory
     public static List<string?> GetAllProjectNames()
     {
         try
         {
-            return Directory.
-                GetDirectories(BaseDirectory).
-                Select(Path.GetFileName).
-                Where(name => !string.IsNullOrEmpty(name)).
-                ToList();
+            return Directory.GetDirectories(BaseDirectory).Select(Path.GetFileName).Where(name => !string.IsNullOrEmpty(name)).ToList();
         }
         catch (Exception ex)
         {
@@ -64,9 +47,7 @@ public static class FilingSystem
         }
     }
 
-
     public static void SaveTextFile(string filePath, string content) => File.WriteAllText(filePath, content);
-
     public static string LoadTextFile(string filePath) => File.Exists(filePath) ? File.ReadAllText(filePath) : string.Empty;
 
 }

@@ -2,7 +2,7 @@
 
 public sealed record ReverseInput
 (
-    ProjectInput Project,
+    Project Project,
     Material Material,
     IReadOnlyList<TableLug> LugTable
 );

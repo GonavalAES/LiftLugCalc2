@@ -66,8 +66,6 @@ public sealed class ConsoleUI
             UICommon.PromptToContinue();
             return;
         }
-        if (UICommon.PromptSaveReport()) SaveReport(project, result);
-        if (UICommon.PromptSaveProject()) SaveProject(project);
 
         Console.WriteLine();
         UICommon.DrawSeparator();
@@ -78,7 +76,7 @@ public sealed class ConsoleUI
         var projectNames = FilingSystem.GetAllProjectNames();
         if (projectNames.Count == 0)
         {
-            UICommon.MessageWarning("-> No saved projects found.");
+            UICommon.MessageWarning("No saved projects found.");
             UICommon.PromptToContinue();
             return;
         }
@@ -90,7 +88,7 @@ public sealed class ConsoleUI
         int choice = UICommon.PromptInt("> Select project number:");
         if (choice < 1 || choice > projectNames.Count)
         {
-            UICommon.MessageWarning("-> Invalid selection.");
+            UICommon.MessageWarning("Invalid selection.");
             UICommon.PromptToContinue();
             return;
         }
@@ -102,16 +100,17 @@ public sealed class ConsoleUI
         ChooseCalculationTypeAndRun(project);
     }
 
-    private ProjectInput? LoadProject(string projectName)
+    private Project? LoadProject(string projectName)
     {
-        string dataDir = FilingSystem.GetProjectSubDirectory(projectName, "Data");
+        string dataDir = FilingSystem.GetProjectDirectory(projectName);
         string projectFile = Path.Combine(dataDir, "project.txt");
 
         string content = FilingSystem.LoadTextFile(projectFile);
+        UICommon.MessageLoadProject();
+
         if (string.IsNullOrWhiteSpace(content))
         {
-            UICommon.MessageError("-> Project file is empty or missing.");
-
+            UICommon.MessageError("Project file is empty or missing.");
             return null!;
         }
 
@@ -140,21 +139,22 @@ public sealed class ConsoleUI
         return project;
     }
 
-    private ProjectInput ReadInitialData()
+    private Project ReadInitialData()
     {
-        var project = new ProjectInput { ProjectID = 0 };
+        var project = new Project { ProjectID = 0 };
 
         project.Name = UICommon.PromptRequired("> Project name:");
         project.CreatedBy = UICommon.PromptOptional("> Created by:");
-        project.Date = DateTime.Today.ToString("> Date (dd-MM-yyyy):");
         project.Revision = UICommon.PromptOptional("> Revision:");
+
+        project.Date = DateTime.Today.ToString("dd-MM-yyyy");
 
         UICommon.DrawSeparator();
 
         return project;
     }
 
-    private void ApplyWeightAndWcf(ProjectInput project, out double nominalWeightKg, out double wcf)
+    private void ApplyWeightAndWcf(Project project, out double nominalWeightKg, out double wcf)
     {
         while (true)
         {
@@ -171,7 +171,7 @@ public sealed class ConsoleUI
                     nominalWeightKg = UICommon.PromptDouble("> Working Load Limit (WLL) [kg]:");
                     break; // out of the 'switch' to the next step
                 default:
-                    UICommon.MessageWarning("-> Invalid choice (1 or 2).");
+                    UICommon.MessageWarning("Invalid choice (1 or 2).");
                     continue; // back to the beginning of the 'while' loop
             }
 
@@ -191,14 +191,15 @@ public sealed class ConsoleUI
 
             if (wcfChoice is "1" or "2" or "3" or "4") break;
 
-            UICommon.MessageWarning("-> Invalid. Press Enter to accept default:");
+            UICommon.MessageWarning("Invalid. Press Enter to accept default:");
             if (Console.ReadKey(intercept: true).Key == ConsoleKey.Enter) break;
         }
 
+        Console.WriteLine();
         project.WLL = nominalWeightKg * wcf;
     }
 
-    private void ReadLiftGeometry(ProjectInput project)
+    private void ReadLiftGeometry(Project project)
     {
         while (true)
         {
@@ -207,9 +208,10 @@ public sealed class ConsoleUI
             project.NumberPoints = UICommon.PromptInt("> Number of lifting points (1–4):");
             if (project.NumberPoints is >= 1 and <= 4) break;
 
-            UICommon.MessageWarning("-> Must be 1-4.");
+            UICommon.MessageWarning("Must be 1-4.");
         }
 
+        Console.WriteLine();
         UICommon.LiftGeometryHeader();
         switch (project.NumberPoints)
         {
@@ -248,15 +250,15 @@ public sealed class ConsoleUI
         }
     }
 
-    private CalculationResult? ChooseCalculationTypeAndRun(ProjectInput project)
+    private CalculationResult? ChooseCalculationTypeAndRun(Project project)
     {
         UICommon.PromptTypeCalculation();
 
         var choice = Console.ReadLine()?.Trim();
+        Console.WriteLine();
 
         if (choice == "1") return RunForwardCalculation(project);
         else if (choice == "2") return RunReverseCalculation(project, _lugs);
-
         else
         {
             UICommon.MessageWarning("-> Invalid type.");
@@ -264,13 +266,13 @@ public sealed class ConsoleUI
         }
     }
 
-    private CalculationResult RunForwardCalculation(ProjectInput project)
+    private CalculationResult RunForwardCalculation(Project project)
     {
         var material = SelectMaterial();
         var lug = SelectLug();
 
-        project.UserLugID = lug.LugID;
-        project.UserMaterialID = material.MaterialID;
+        project.SelectedLug = lug;
+        project.SelectedMaterial = material;
 
         var input = new ForwardInput(project, lug, material);
         var result = ForwardCalculator.Run(input);
@@ -282,7 +284,7 @@ public sealed class ConsoleUI
         return result;
     }
 
-    private CalculationResult RunReverseCalculation(ProjectInput project, IReadOnlyList<TableLug> lugs)
+    private CalculationResult RunReverseCalculation(Project project, IReadOnlyList<TableLug> lugs)
     {
         var material = SelectMaterial();
         var input = new ReverseInput(project, material, lugs);
@@ -290,8 +292,8 @@ public sealed class ConsoleUI
 
         if (selection.Best is not null)
         {
-            project.UserLugID = selection.Best.Lug.LugID;
-            project.UserMaterialID = material.MaterialID;
+            project.SelectedLug = selection.Best.Lug;
+            project.SelectedMaterial = material;
         }
 
         var result = selection.Best?.Result;
@@ -312,13 +314,12 @@ public sealed class ConsoleUI
         while (true)
         {
             int matId = UICommon.PromptInt("Select Material ID");
+            Console.WriteLine();
 
             var material = _materials.FirstOrDefault(m => m.MaterialID == matId);
             if (material is not null) return material;
 
-            string message = "> Invalid Material ID. Please select one of the listed IDs.";
-            UICommon.MessageWarning(message);
-
+            UICommon.MessageWarning("> Invalid Material ID. Please select one of the listed IDs.");
         }
     }
 
@@ -331,6 +332,7 @@ public sealed class ConsoleUI
         while (true)
         {
             int lugId = UICommon.PromptInt("Select Lug ID");
+            Console.WriteLine();
 
             var lug = _lugs.FirstOrDefault(l => l.LugID == lugId);
             if (lug is not null)
@@ -339,12 +341,11 @@ public sealed class ConsoleUI
                 return lug;
             }
 
-            string message = "> Invalid Lug ID. Please select one of the listed IDs.";
-            UICommon.MessageWarning(message);
+            UICommon.MessageWarning("> Invalid Lug ID. Please select one of the listed IDs.");
         }
     }
 
-    private void ShowPostCalculationMenu(ProjectInput project, CalculationResult result)
+    private void ShowPostCalculationMenu(Project project, CalculationResult result)
     {
         while (true)
         {
@@ -376,7 +377,7 @@ public sealed class ConsoleUI
         }
     }
 
-    private void ShowCommonInput(ProjectInput project, Material material, CalculationResult result)
+    private void ShowCommonInput(Project project, Material material, CalculationResult result)
     {
         Console.WriteLine($"> Project  : {project.Name}");
         Console.WriteLine($"> WLL      : {project.WLL:N1} kg (design)");
@@ -386,13 +387,14 @@ public sealed class ConsoleUI
     }
 
 
-    private void ShowForwardResult(ProjectInput project, TableLug lug, Material material, CalculationResult result)
+    private void ShowForwardResult(Project project, TableLug lug, Material material, CalculationResult result)
     {
         UICommon.ResultsHeader();
-
         ShowCommonInput(project, material, result);
+
         Console.WriteLine($"> Lug      : ID {lug.LugID}, Type {lug.LugType}, WLL = {lug.LugWLL} kg");
         UICommon.DrawLugType(lug.LugType);
+
         Console.WriteLine();
         Console.WriteLine($"> FS Tension : {result.FSTension:N1}");
         Console.WriteLine($"> FS Shear   : {result.FSShear:N1}");
@@ -407,10 +409,9 @@ public sealed class ConsoleUI
         Console.WriteLine();
     }
 
-    private void ShowReverseResult(ProjectInput project, Material material, ReverseSelection selection)
+    private void ShowReverseResult(Project project, Material material, ReverseSelection selection)
     {
         UICommon.ResultsHeader();
-
         ShowCommonInput(project, material, selection.Best?.Result!);
         Console.WriteLine();
 
@@ -421,8 +422,10 @@ public sealed class ConsoleUI
         }
 
         var best = selection.Best;
+
         Console.WriteLine($"> Suggested Lug ID: {best.Lug.LugID}, Type {best.Lug.LugType}, WLL = {best.Lug.LugWLL} kg");
         UICommon.DrawLugType(best.Lug.LugType);
+
         Console.WriteLine();
         Console.WriteLine($"> Minimum FS      : {best.Result.MinimumFS:N1}");
         Console.WriteLine($"> Result          : {(best.Result.Pass ? "PASS" : "FAIL")}");
@@ -433,7 +436,7 @@ public sealed class ConsoleUI
         Console.WriteLine();
     }
 
-    private void ShowDetailedReport(ProjectInput project, CalculationResult result)
+    private void ShowDetailedReport(Project project, CalculationResult result)
     {
         UICommon.DrawSeparator();
         Console.WriteLine(ReportGenerator.GenerateDetailedReport(project, result));
@@ -442,12 +445,12 @@ public sealed class ConsoleUI
         Console.ReadKey();
     }
 
-    private void SaveReport(ProjectInput project, CalculationResult result)
+    private void SaveReport(Project project, CalculationResult result)
     {
-        FilingSystem.EnsureProjectDirectoriesExist(project.Name);
-        string resultsDir = FilingSystem.GetProjectSubDirectory(project.Name, "Results");
+        FilingSystem.EnsureProjectDirectory(project.Name);
 
-        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string resultsDir = FilingSystem.GetProjectDirectory(project.Name);
+        string timestamp = DateTime.Now.ToString("dd-MM-yyyy");
         string reportFile = Path.Combine(resultsDir, $"Report_{timestamp}.txt");
         string reportText = ReportGenerator.GenerateDetailedReport(project, result);
 
@@ -457,13 +460,14 @@ public sealed class ConsoleUI
         Console.WriteLine();
     }
 
-    private void SaveProject(ProjectInput project)
+    private void SaveProject(Project project)
     {
-        FilingSystem.EnsureProjectDirectoriesExist(project.Name);
-        string dataDir = FilingSystem.GetProjectSubDirectory(project.Name, "Data");
-        string projectFile = Path.Combine(dataDir, "project.txt");
+        FilingSystem.EnsureProjectDirectory(project.Name);
 
+        string dataDir = FilingSystem.GetProjectDirectory(project.Name);
+        string projectFile = Path.Combine(dataDir, "project.txt");
         string text = Formatter.ProjectFormatter.ToText(project);
+
         FilingSystem.SaveTextFile(projectFile, text);
 
         UICommon.MessageSuccess($"Project saved to: {projectFile}");

@@ -9,7 +9,7 @@ public static class Formatter
 {
     public static class ProjectFormatter
     {
-        public static string ToText(ProjectInput project)
+        public static string ToText(Project project)
         {
             var sb = new StringBuilder();
 
@@ -37,9 +37,9 @@ public static class Formatter
             return sb.ToString();
         }
 
-        public static ProjectInput FromText(string content)
+        public static Project FromText(string content)
         {
-            var project = new ProjectInput();
+            var project = new Project();
 
             var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 

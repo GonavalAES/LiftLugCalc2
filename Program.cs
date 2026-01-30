@@ -16,10 +16,14 @@ namespace LiftLugCalc2
             var lugList = TableLugLoader.LoadFromCsv();
             var materialList = MaterialLoader.LoadFromCsv();
 
-            if (lugList.Count == 0 || materialList.Count == 0)
+            if (lugList.Count == 0)
             {
-                UICommon.MessageError($"> Ref data failed. Lugs: {lugList.Count}, Mats: {materialList.Count}");
-                UICommon.PromptToContinue();
+                UICommon.MessageError("No lug types were loaded. Please ensure that the 'LugTypes.csv' file is present and correctly formatted.");
+                return;
+            }
+            else if (materialList.Count == 0)
+            {
+                UICommon.MessageError("No materials were loaded. Please ensure that the 'Materials.csv' file is present and correctly formatted.");
                 return;
             }
 

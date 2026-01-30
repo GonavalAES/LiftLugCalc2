@@ -1,6 +1,6 @@
 ﻿namespace LiftLugCalc2.Core.Models;
 
-public record ProjectInput
+public record Project
 {
     public int ProjectID { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -16,6 +16,9 @@ public record ProjectInput
     public double A2 { get; set; }            // Distance from COG to 2nd point (longitudinal)
     public double B1 { get; set; }            // Distance transverse 1
     public double B2 { get; set; }            // Distance transverse 2
+
+    public TableLug? SelectedLug { get; set; }
+    public Material? SelectedMaterial { get; set; }
 
     public int? UserLugID { get; set; }
     public int? UserMaterialID { get; set; }

@@ -81,7 +81,7 @@ public static class LugVerificationTests
     private static void TestForwardCalculatorType0()
     {
         // Test data: simple 4-point lift, Type 0 lug, S355
-        var project = new ProjectInput
+        var project = new Project
         {
             ProjectID = 999,
             WLL = 10000.0,      // 10 tonnes
@@ -133,7 +133,7 @@ public static class LugVerificationTests
         var lugs = TableLugLoader.LoadFromCsv();
         var materials = MaterialLoader.LoadFromCsv();
 
-        var project = new ProjectInput
+        var project = new Project
         {
             ProjectID = 888,
             WLL = 15000.0,      // 15 tonnes

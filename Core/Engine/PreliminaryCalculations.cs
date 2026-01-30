@@ -14,7 +14,7 @@ public static class PreliminaryCalculations
             _ => Constants.WCF_DEFAULT // default safe
         };
 
-    public static double CalculatePLP(ProjectInput project)
+    public static double CalculatePLP(Project project)
     {
         // Convert WLL from kg to kN
         double wllKN = project.WLL * Constants.KG_TO_KN;
@@ -74,8 +74,4 @@ public static class PreliminaryCalculations
 
     public static double WeldCapacity(double weldArea, double fy) =>
         (fy / (Math.Sqrt(3.0) * Constants.GAMMA_RM_FILLET) * weldArea) / 1000.0;
-
-
-    // This must go to UI classes!!!!!!!
-    public static bool MeetsMinimumSafetyFactor(double fs) => fs >= Constants.MINIMUM_SAFETY_FACTOR;
 }

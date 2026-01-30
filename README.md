@@ -17,7 +17,7 @@
 LiftLugCalc2/
 ├── Core/           # Pure engineering logic
 │   ├── Engine/     # Calculators (ForwardCalculator, ReverseCalculator)
-│   ├── Models/     # ProjectInput, TableLug, Material, LugCheckResult
+│   ├── Models/     # Project, TableLug, Material, LugCheckResult
 │   ├── FileOperations/ # Pure loaders (TableLugLoader, MaterialLoader)
 │   ├── Resources/      # LugType.csv, Materials.csv
 │   └── Utilities/  # PreliminaryCalculations, Constants
@@ -69,7 +69,7 @@ LiftLugCalc2/
 ```
 Documents/LiftingLugCalc2/<ProjectName>/
 ├── Data/
-│   └── project.txt          # ProjectInput + selections
+│   └── project.txt          # Project + selections
 ├── Results/
 │   └── ForwardReport_*.txt  # Calculation summaries
 └── Logs/                    # Future logging

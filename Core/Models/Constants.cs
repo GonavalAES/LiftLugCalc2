@@ -2,6 +2,9 @@
 {
     public static class Constants
     {
+        // ========== BASE DIRECTORY ==========
+        public const string BASE_DIRECTORY = "Lifting Lug Calc 2";
+
         // ========== UI DATE FORMAT ==========
         public const string DATE_FORMAT = "dd-MM-yyyy";
 

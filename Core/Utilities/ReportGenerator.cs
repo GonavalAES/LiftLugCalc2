@@ -7,7 +7,7 @@ namespace LiftLugCalc2.Core.Utilities;
 
 public static class ReportGenerator
 {
-    public static string GenerateDetailedReport(ProjectInput project, CalculationResult result)
+    public static string GenerateDetailedReport(Project project, CalculationResult result)
     {
         var sb = new StringBuilder();
 
@@ -15,7 +15,6 @@ public static class ReportGenerator
         sb.AppendLine("║             LIFTING LUG CALCULATION REPORT              ║");
         sb.AppendLine("╚═════════════════════════════════════════════════════════╝");
         sb.AppendLine();
-
         sb.AppendLine("PROJECT INFORMATION");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine($"Project Name    : {project.Name}");
@@ -24,16 +23,12 @@ public static class ReportGenerator
         sb.AppendLine($"Revision        : {project.Revision}");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine();
-
         sb.AppendLine("LOAD CONFIGURATION");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine($"Load            : {project.WLL:N1} kg");
         sb.AppendLine($"Number of Points: {project.NumberPoints}");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine();
-
-        // Add any lug/material info you decide
-
         sb.AppendLine("CALCULATION RESULTS");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine($"Analysis Type   : {result.CalculationType}");
@@ -44,10 +39,26 @@ public static class ReportGenerator
         sb.AppendLine();
         sb.AppendLine("LUG CHARACTERISTICS");
         sb.AppendLine("-----------------------------------------------------------");
-        sb.AppendLine($"Lug ID          : {project.UserLugID}");
-        sb.AppendLine($"");
-        sb.AppendLine($"");
-        sb.AppendLine($"");
+        if (project.SelectedLug is { } lug)
+        {
+            sb.AppendLine($"Lug ID               : {lug.LugID}");
+            sb.AppendLine($"Lug Type             : {lug.LugType}");
+            sb.AppendLine($"Work Load Limit      : {lug.LugWLL} kg");
+            sb.AppendLine();
+            sb.AppendLine($"Plate Thickness      : {lug.ThicknessPlate} mm");
+            sb.AppendLine($"Hole Diameter        : {lug.DiameterHole} mm");
+            sb.AppendLine($"Lug Radius           : {lug.RadiusLug} mm");
+            sb.AppendLine($"Center Hole Height   : {lug.HeightCenterHole} mm");
+            sb.AppendLine($"Lug Length           : {lug.LengthLug} mm");
+            sb.AppendLine($"Cheek Boss Radius    : {lug.RadiusCheek_Boss} mm");
+            sb.AppendLine($"Cheek Boss Thickness : {lug.ThicknessCheek_Boss} mm");
+            sb.AppendLine($"Cheek Weld Throat    : {lug.WeldThroatCheek} mm");
+            if (lug.LugType == 3)
+            {
+
+            }
+        }
+        sb.AppendLine();
         sb.AppendLine("CAPACITY RESULTS");
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine("Tension:");
@@ -55,17 +66,14 @@ public static class ReportGenerator
         sb.AppendLine($"  Capacity         : {result.TensionCapacity:N1} kN");
         sb.AppendLine($"  Factor of Safety : {result.FSTension:N1}");
         sb.AppendLine();
-
         sb.AppendLine("Shear:");
         sb.AppendLine($"  Capacity         : {result.ShearCapacity:N1} kN");
         sb.AppendLine($"  Factor of Safety : {result.FSShear:N1}");
         sb.AppendLine();
-
         sb.AppendLine("Bearing:");
         sb.AppendLine($"  Capacity         : {result.BearingCapacity:N1} kN");
         sb.AppendLine($"  Factor of Safety : {result.FSBearing:N1}");
         sb.AppendLine();
-
         sb.AppendLine("Tear-Out:");
         sb.AppendLine($"  Capacity         : {result.TearOutCapacity:N1} kN");
         sb.AppendLine($"  Factor of Safety : {result.FSTearOut:N1}");
@@ -83,7 +91,7 @@ public static class ReportGenerator
         sb.AppendLine();
 
         sb.AppendLine("╔═══════════════════════════════════════════════════╗");
-        sb.AppendLine($"║Report generated: {DateTime.Now:dd-MM-yyyy HH:mm:ss}");
+        sb.AppendLine($"║Report generated: {DateTime.Now:dd-MM-yyyy HH:mm:ss}║");
         sb.AppendLine("╚═══════════════════════════════════════════════════╝");
 
         return sb.ToString();

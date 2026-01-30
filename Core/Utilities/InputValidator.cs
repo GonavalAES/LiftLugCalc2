@@ -1,5 +1,4 @@
 ﻿using LiftLugCalc2.ConsoleFrontEnd;
-using LiftLugCalc2.Core.Models;
 
 using System.Globalization;
 
@@ -65,27 +64,6 @@ public static class InputValidator
         }
 
         value = parsed;
-        return true;
-    }
-
-    public static bool ValidateDate(string? input, out DateTime date, string fieldName, bool showMessage = true)
-    {
-        date = default;
-
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            if (showMessage) UICommon.MessageWarning($"Field \"{fieldName}\" cannot be empty.");
-            return false;
-        }
-
-        if (!DateTime.TryParseExact(input, Constants.DATE_FORMAT, Culture, DateTimeStyles.None, out var parsed))
-        {
-            if (showMessage)
-                UICommon.MessageWarning($"Field \"{fieldName}\" must be a valid date in format {Constants.DATE_FORMAT}.");
-            return false;
-        }
-
-        date = parsed;
         return true;
     }
 }

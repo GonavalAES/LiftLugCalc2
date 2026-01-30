@@ -2,7 +2,6 @@
 
 public record CalculationResult
 {
-    public int CalcResultID { get; set; }
     public string CalculationType { get; set; } = string.Empty; // Forward calculation or Reverse calculation
     public double AppliedLoad { get; set; }
     public double NetSectionArea { get; set; }

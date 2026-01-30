@@ -29,7 +29,7 @@ public static class ForwardCalculator
 
 
 
-    private static void LugPassCheck(ProjectInput project, TableLug lug, Material material, CalculationResult results)
+    private static void LugPassCheck(Project project, TableLug lug, Material material, CalculationResult results)
     {
         switch (lug.LugType)
         {
@@ -63,7 +63,7 @@ public static class ForwardCalculator
         {
             if (lug.LugWeldThroat > Constants.WELD_THROAT_MAX_RATIO * t)
             {
-                UICommon.MessageWarning($"Main weld throat {lug.LugWeldThroat:F1}mm > {Constants.WELD_THROAT_MAX_RATIO:P0} × plate {t:F0}mm - (Too thick)");
+                //UICommon.MessageWarning($"Main weld throat {lug.LugWeldThroat:F1}mm > {Constants.WELD_THROAT_MAX_RATIO:P0} × plate {t:F0}mm - (Too thick)");
                 isValid = false;
             }
 
@@ -79,12 +79,12 @@ public static class ForwardCalculator
 
             if (lug.WeldThroatCheek > Constants.WELD_THROAT_MAX_RATIO * tc)
             {
-                UICommon.MessageWarning($"Cheek weld throat {lug.WeldThroatCheek:F1}mm > {Constants.WELD_THROAT_MAX_RATIO:P0} × cheek {tc:F0}mm");
+                //UICommon.MessageWarning($"Cheek weld throat {lug.WeldThroatCheek:F1}mm > {Constants.WELD_THROAT_MAX_RATIO:P0} × cheek {tc:F0}mm");
                 isValid = false;
             }
             if (lug.WeldThroatCheek < Constants.WELD_THROAT_MIN)
             {
-                UICommon.MessageWarning($"Cheek weld throat {lug.WeldThroatCheek:F1}mm < minimum {Constants.WELD_THROAT_MIN:F1}mm");
+                //UICommon.MessageWarning($"Cheek weld throat {lug.WeldThroatCheek:F1}mm < minimum {Constants.WELD_THROAT_MIN:F1}mm");
                 isValid = false;
             }
         }
@@ -108,8 +108,8 @@ public static class ForwardCalculator
         }
         else if (edgeDistance < 1.0 * lug.DiameterHole)
         {
-            UICommon.MessageWarning($"Edge distance {edgeDistance:F1}mm - Marginal (0.8-1.0×d)");
-            UICommon.MessageWarning("Consider increasing lug size.");
+            //UICommon.MessageWarning($"Edge distance {edgeDistance:F1}mm - Marginal (0.8-1.0×d)");
+            //UICommon.MessageWarning("Consider increasing lug size.");
             Console.WriteLine();
         }
 
@@ -154,7 +154,7 @@ public static class ForwardCalculator
 
     // --- CheckType0 --- Type 0: Direct connection - machined from structure, no welds
     // Computes only capacities/resistances related to lug plate
-    public static void CheckType0(ProjectInput project, TableLug lug, Material material, CalculationResult results)
+    public static void CheckType0(Project project, TableLug lug, Material material, CalculationResult results)
     {
         // 0. Parameters
         double fy = material.YieldStrength;         // MPa
@@ -187,7 +187,7 @@ public static class ForwardCalculator
 
     // --- CheckType1 --- Type 1: Single plate lug with fillet welds at base
     // Computes only capacities/resistances related to lug plate
-    public static void CheckType1(ProjectInput project, TableLug lug, Material material, CalculationResult results)
+    public static void CheckType1(Project project, TableLug lug, Material material, CalculationResult results)
     {
         // 0. Parameters
         double fy = material.YieldStrength;         // MPa
@@ -235,7 +235,7 @@ public static class ForwardCalculator
 
     // --- CheckType2 --- Type 2: Cheek plate lug - main plate with two side cheek plates
     // Computes only capacities/resistances related to lug plate
-    public static void CheckType2(ProjectInput project, TableLug lug, Material material, CalculationResult results)
+    public static void CheckType2(Project project, TableLug lug, Material material, CalculationResult results)
     {
         // 0. Parameters
         double fy = material.YieldStrength;         // MPa
@@ -291,7 +291,7 @@ public static class ForwardCalculator
 
     // --- CheckType3 --- Type 3: Boss lug - cylindrical boss with lug plate on top
     // Computes only capacities/resistances related to lug plate
-    public static void CheckType3(ProjectInput project, TableLug lug, Material material, CalculationResult results)
+    public static void CheckType3(Project project, TableLug lug, Material material, CalculationResult results)
     {
         // 0. Parameters
         double fy = material.YieldStrength;             // MPa
