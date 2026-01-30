@@ -1,8 +1,6 @@
 ﻿using LiftLugCalc2.ConsoleFrontEnd;
 using LiftLugCalc2.Core.Models;
 
-using System.Reflection;
-
 namespace LiftLugCalc2.Core.FileOperations;
 
 public static class FilingSystem
@@ -28,7 +26,8 @@ public static class FilingSystem
     public static string EnsureProjectDirectory(string projectName) => GetProjectDirectory(projectName);
 
     // Gets the folder path where the currently executing assembly (the .exe) resides
-    public static string GetExecutableDirectory() => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? ".";
+    //public static string GetExecutableDirectory() => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? ".";
+    public static string GetExecutableDirectory() => AppContext.BaseDirectory;
 
     // Combines executable directory with a relative filename or folder and returns full path
     public static string GetFilePath(string relativePath) => Path.Combine(GetExecutableDirectory(), relativePath);
