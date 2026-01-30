@@ -4,7 +4,7 @@ namespace LiftLugCalc2.Core.Engine;
 
 public static class ReverseCalculator
 {
-    public static ReverseSelection Run(ReverseInput input)
+    public static ReverseSelection Run(ReverseInput input, string choice)
     {
         var project = input.Project;
         var material = input.Material;
@@ -19,7 +19,7 @@ public static class ReverseCalculator
         foreach (var lug in lugTable)
         {
             var forwardInput = new ForwardInput(project, lug, material);
-            var results = ForwardCalculator.Run(forwardInput);
+            var results = ForwardCalculator.Run(forwardInput, choice);
 
             if (results.Pass) passed.Add(new ReverseCandidate(lug, results));
         }

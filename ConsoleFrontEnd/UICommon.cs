@@ -229,7 +229,7 @@ public static class UICommon
         Console.WriteLine("║ 2. Save report file        ║");
         Console.WriteLine("║ 3. Save project            ║");
         Console.WriteLine("║ 4. Perform new calculation ║");
-        Console.WriteLine("║ Q. Back to Main Menu       ║");
+        Console.WriteLine("║ 5. Back to Main Menu       ║");
         Console.WriteLine("╚════════════════════════════╝");
         Console.WriteLine();
     }

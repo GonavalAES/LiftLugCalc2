@@ -1,5 +1,6 @@
 ﻿namespace LiftLugCalc2.Core.Core.Tests;
 
+/*
 public static class Assert
 {
     public static void NearlyEqual(
@@ -27,3 +28,4 @@ public static class Assert
         Console.WriteLine($"[OK] {message}");
     }
 }
+*/

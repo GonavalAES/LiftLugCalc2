@@ -90,9 +90,7 @@ public static class ReportGenerator
         sb.AppendLine("-----------------------------------------------------------");
         sb.AppendLine();
 
-        sb.AppendLine("╔═══════════════════════════════════════════════════╗");
-        sb.AppendLine($"║Report generated: {DateTime.Now:dd-MM-yyyy HH:mm:ss}║");
-        sb.AppendLine("╚═══════════════════════════════════════════════════╝");
+        sb.AppendLine($"Report generated: {DateTime.Now:dd-MM-yyyy HH:mm:ss}");
 
         return sb.ToString();
     }

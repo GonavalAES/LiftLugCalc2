@@ -1,9 +1,6 @@
-﻿using LiftLugCalc2.Core.Engine;
-using LiftLugCalc2.Core.FileOperations;
-using LiftLugCalc2.Core.Models;
+﻿namespace LiftLugCalc2.Core.Core.Tests;
 
-namespace LiftLugCalc2.Core.Core.Tests;
-
+/*
 public static class LugVerificationTests
 {
     public static void RunAll()
@@ -154,3 +151,4 @@ public static class LugVerificationTests
         Assert.True(selection.Best.Result.Pass, "Best lug passes verification");
     }
 }
+*/

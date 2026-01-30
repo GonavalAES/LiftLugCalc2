@@ -5,16 +5,15 @@ namespace LiftLugCalc2.Core.Engine;
 
 public static class ForwardCalculator
 {
-    public static CalculationResult Run(ForwardInput input)
+    public static CalculationResult Run(ForwardInput input, string choice)
     {
         var project = input.Project;
         var lug = input.Lug;
         var material = input.Material;
+        var results = new CalculationResult { };
 
-        var results = new CalculationResult
-        {
-            CalculationType = "Forward Calculation"
-        };
+        if (choice == "1") results.CalculationType = "Forward Calculation";
+        if (choice == "2") results.CalculationType = "Reverse Calculation";
 
         // 1. Calculate PLP (Point Load with factors)
         double plp = PreliminaryCalculations.CalculatePLP(project);

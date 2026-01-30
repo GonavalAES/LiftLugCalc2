@@ -257,8 +257,8 @@ public sealed class ConsoleUI
         var choice = Console.ReadLine()?.Trim();
         Console.WriteLine();
 
-        if (choice == "1") return RunForwardCalculation(project);
-        else if (choice == "2") return RunReverseCalculation(project, _lugs);
+        if (choice == "1") return RunForwardCalculation(project, choice);
+        else if (choice == "2") return RunReverseCalculation(project, _lugs, choice);
         else
         {
             UICommon.MessageWarning("-> Invalid type.");
@@ -266,7 +266,7 @@ public sealed class ConsoleUI
         }
     }
 
-    private CalculationResult RunForwardCalculation(Project project)
+    private CalculationResult RunForwardCalculation(Project project, string choice)
     {
         var material = SelectMaterial();
         var lug = SelectLug();
@@ -275,7 +275,7 @@ public sealed class ConsoleUI
         project.SelectedMaterial = material;
 
         var input = new ForwardInput(project, lug, material);
-        var result = ForwardCalculator.Run(input);
+        var result = ForwardCalculator.Run(input, choice);
 
         ShowForwardResult(project, lug, material, result);
         ShowPostCalculationMenu(project, result);
@@ -284,11 +284,11 @@ public sealed class ConsoleUI
         return result;
     }
 
-    private CalculationResult RunReverseCalculation(Project project, IReadOnlyList<TableLug> lugs)
+    private CalculationResult RunReverseCalculation(Project project, IReadOnlyList<TableLug> lugs, string choice)
     {
         var material = SelectMaterial();
         var input = new ReverseInput(project, material, lugs);
-        var selection = ReverseCalculator.Run(input);
+        var selection = ReverseCalculator.Run(input, choice);
 
         if (selection.Best is not null)
         {
@@ -367,8 +367,7 @@ public sealed class ConsoleUI
                 case "4":
                     CreateAndRunProject();
                     break;
-                case "q":
-                case "Q":
+                case "5":
                     return;
                 default:
                     UICommon.MessageWarning("Invalid choice. Try again.");
