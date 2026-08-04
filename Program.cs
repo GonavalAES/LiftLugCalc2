@@ -1,9 +1,11 @@
 ﻿using LiftLugCalc2.Core.FileOperations;
 using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.GUI;
 
-using Veldrid;
-using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
+using Silk.NET.Input;
+using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
+using Silk.NET.Windowing;
 
 namespace LiftLugCalc2
 {
@@ -40,62 +42,85 @@ namespace LiftLugCalc2
         }
         */
 
-        private static Sdl2Window? sdl2Window;
-        private static GraphicsDevice? graphicsDevice;
-        private static CommandList? commandList;
-        private static ImGuiRenderer? renderer;
+        private static IWindow _window = null!;
+        private static GL _gl = null!;
+        private static IInputContext _inputContext = null!;
+        private static ImGuiController _imGuiController = null!;
+        private static GuiUI _gui = null!;
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            // 1. Setup Window & Graphics (KISS approach)
-            VeldridStartup.CreateWindowAndGraphicsDevice(
-                new WindowCreateInfo(100, 100, 1280, 720, // Need to get the sizes to a Constants class. Or get it into a CSV.
-                                     WindowState.Normal,
-                                     "LiftLugCalc2 - Engineering Dashboard"),
-                out sdl2Window, out graphicsDevice);
+            // 1. Configure Window Options
+            var options = WindowOptions.Default;
+            options.Size = new Silk.NET.Maths.Vector2D<int>(1280, 720);
+            options.Title = "LiftLugCalc2 - Engineering Dashboard";
+            options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(3, 3));
 
-            commandList = graphicsDevice.ResourceFactory.CreateCommandList();
-            renderer = new ImGuiRenderer(graphicsDevice,
-                                         graphicsDevice.MainSwapchain.Framebuffer.OutputDescription,
-                                         sdl2Window.Width,
-                                         sdl2Window.Height);
+            _window = Window.Create(options);
 
-            // 2. Load Reference Data
-            AppState.Lugs = TableLugLoader.LoadFromCsv();
-            AppState.Materials = MaterialLoader.LoadFromCsv();
-            AppState.LugNames = AppState.Lugs.Select(l => $"ID {l.LugID}: {l.LugType}").ToArray();
-            AppState.MaterialNames = AppState.Materials.Select(m => m.Designation).ToArray();
+            // 2. Attach Window Lifecycle Events
+            _window.Load += OnLoad;
+            _window.Update += OnUpdate;
+            _window.Render += OnRender;
+            _window.FramebufferResize += OnFramebufferResize;
+            _window.Closing += OnClose;
 
-            // 3. The Main Loop
-            while (sdl2Window.Exists)
-            {
-                InputSnapshot snapshot = sdl2Window.PumpEvents();
-                if (!sdl2Window.Exists) break;
-
-                // Feed input to ImGui
-                renderer.Update(1f / 60f, snapshot);
-
-                // Define the UI
-                // Render the various windows/forms
-                // This is in a class of its own in GUI folder, Program stays lean and clean!!!!!
-
-                // Render
-                commandList.Begin();
-                commandList.SetFramebuffer(graphicsDevice.MainSwapchain.Framebuffer);
-                commandList.ClearColorTarget(0, new RgbaFloat(0.1f, 0.1f, 0.13f, 1f)); // Dark gray background
-                renderer.Render(graphicsDevice, commandList);
-                commandList.End();
-
-                graphicsDevice.SubmitCommands(commandList);
-                graphicsDevice.SwapBuffers(graphicsDevice.MainSwapchain);
-            }
-
-            // Cleanup
-            renderer.Dispose();
-            commandList.Dispose();
-            graphicsDevice.Dispose();
+            // 3. Start Application Loop
+            _window.Run();
         }
 
+        private static void OnLoad()
+        {
+            // Initialize OpenGL and Input Contexts
+            _gl = _window.CreateOpenGL();
+            _inputContext = _window.CreateInput();
 
+            // Initialize Native Silk.NET ImGui Controller
+            _imGuiController = new ImGuiController(
+                _gl,
+                _window,
+                _inputContext
+            );
+
+            // Load Engineering Reference CSVs
+            AppState.Lugs = TableLugLoader.LoadFromCsv();
+            AppState.Materials = MaterialLoader.LoadFromCsv();
+            AppState.LugNames = AppState.Lugs.Select(l => $"ID {l.LugID}: Type {l.LugType} ({l.LugWLL}kg)").ToArray();
+            AppState.MaterialNames = AppState.Materials.Select(m => m.Designation).ToArray();
+
+            // Initialize UI Presenter
+            _gui = new GuiUI();
+        }
+
+        private static void OnUpdate(double delta)
+        {
+            // Update ImGui inputs per frame
+            _imGuiController.Update((float)delta);
+        }
+
+        private static void OnRender(double delta)
+        {
+            // Clear background with dark engineering palette
+            _gl.ClearColor(0.1f, 0.1f, 0.13f, 1.0f);
+            _gl.Clear(ClearBufferMask.ColorBufferBit);
+
+            // Render Application UI
+            _gui.Render();
+
+            // Submit ImGui commands to OpenGL
+            _imGuiController.Render();
+        }
+
+        private static void OnFramebufferResize(Silk.NET.Maths.Vector2D<int> newSize)
+        {
+            _gl.Viewport(newSize);
+        }
+
+        private static void OnClose()
+        {
+            _imGuiController?.Dispose();
+            _inputContext?.Dispose();
+            _gl?.Dispose();
+        }
     }
 }

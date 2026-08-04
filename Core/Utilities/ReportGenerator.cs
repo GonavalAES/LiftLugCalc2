@@ -11,46 +11,46 @@ public static class ReportGenerator
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("═══════════════════════════════════════════════════════════");
+        sb.AppendLine("════════════════════════════════════════════════");
         sb.AppendLine("              LIFTING LUG CALCULATION REPORT");
-        sb.AppendLine("═══════════════════════════════════════════════════════════");
+        sb.AppendLine("════════════════════════════════════════════════");
         sb.AppendLine();
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine("PROJECT INFORMATION");
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine($"Project Name    : {project.Name}");
         sb.AppendLine($"Created By      : {project.CreatedBy}");
         sb.AppendLine($"Date            : {Formatter.FormatDate(project.Date)}");
         sb.AppendLine($"Revision        : {project.Revision}");
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine();
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine("LOAD CONFIGURATION");
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine($"Load            : {project.WLL:N1} kg");
         sb.AppendLine($"Number of Points: {project.NumberPoints}");
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine();
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine("CALCULATION RESULTS");
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine($"Analysis Type   : {result.CalculationType}");
         sb.AppendLine($"Applied Load    : {result.AppliedLoad:N1} kN");
         sb.AppendLine($"Overall Result  : {(result.Pass ? "PASSED" : "FAILED")}");
         sb.AppendLine($"Minimum FS      : {result.MinimumFS:N1}");
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine();
 
         if (project.SelectedLug is { } lug)
         {
-            sb.AppendLine("-----------------------------------------------------------");
+            sb.AppendLine("------------------------------------------------");
             sb.AppendLine("VERIFICATION SUMMARY");
-            sb.AppendLine("-----------------------------------------------------------");
+            sb.AppendLine("------------------------------------------------");
             sb.AppendLine($"Table WLL check : {lug.LugWLL * project.NumberPoints:N0} kg ≥ {project.WLL:N0} kg");
             sb.AppendLine($"Calculated FS check   : Min FS {result.MinimumFS:N1} ≥ {Constants.MINIMUM_SAFETY_FACTOR:N1}");
-            sb.AppendLine("-----------------------------------------------------------");
+            sb.AppendLine("------------------------------------------------");
             sb.AppendLine("LUG CHARACTERISTICS");
-            sb.AppendLine("-----------------------------------------------------------");
+            sb.AppendLine("------------------------------------------------");
             sb.AppendLine($"Lug ID               : {lug.LugID}");
             sb.AppendLine($"Lug Type             : {lug.LugType}");
             sb.AppendLine($"Work Load Limit      : {lug.LugWLL} kg");
@@ -68,9 +68,9 @@ public static class ReportGenerator
             }
         }
         sb.AppendLine();
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine("CAPACITY RESULTS");
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine("Tension:");
         sb.AppendLine($"  Net Section Area : {result.NetSectionArea:N1} mm²");
         sb.AppendLine($"  Capacity         : {result.TensionCapacity:N1} kN");
@@ -97,7 +97,7 @@ public static class ReportGenerator
             sb.AppendLine($"  Geometry Check   : {(result.WeldGeometryOK ? "OK" : "NOT OK")}");
             sb.AppendLine();
         }
-        sb.AppendLine("-----------------------------------------------------------");
+        sb.AppendLine("------------------------------------------------");
         sb.AppendLine();
 
         sb.AppendLine($"Report generated: {DateTime.Now:dd-MM-yyyy HH:mm:ss}");
