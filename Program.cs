@@ -42,11 +42,11 @@ namespace LiftLugCalc2
         }
         */
 
-        private static IWindow _window = null!;
-        private static GL _gl = null!;
-        private static IInputContext _inputContext = null!;
-        private static ImGuiController _imGuiController = null!;
-        private static GuiUI _gui = null!;
+        private static IWindow window = null!;
+        private static GL gl = null!;
+        private static IInputContext inputContext = null!;
+        private static ImGuiController imGuiController = null!;
+        private static GuiController gui = null!;
 
         public static void Main(string[] args)
         {
@@ -56,30 +56,30 @@ namespace LiftLugCalc2
             options.Title = "LiftLugCalc2 - Engineering Dashboard";
             options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(3, 3));
 
-            _window = Window.Create(options);
+            window = Window.Create(options);
 
             // 2. Attach Window Lifecycle Events
-            _window.Load += OnLoad;
-            _window.Update += OnUpdate;
-            _window.Render += OnRender;
-            _window.FramebufferResize += OnFramebufferResize;
-            _window.Closing += OnClose;
+            window.Load += OnLoad;
+            window.Update += OnUpdate;
+            window.Render += OnRender;
+            window.FramebufferResize += OnFramebufferResize;
+            window.Closing += OnClose;
 
             // 3. Start Application Loop
-            _window.Run();
+            window.Run();
         }
 
         private static void OnLoad()
         {
             // Initialize OpenGL and Input Contexts
-            _gl = _window.CreateOpenGL();
-            _inputContext = _window.CreateInput();
+            gl = window.CreateOpenGL();
+            inputContext = window.CreateInput();
 
             // Initialize Native Silk.NET ImGui Controller
-            _imGuiController = new ImGuiController(
-                _gl,
-                _window,
-                _inputContext
+            imGuiController = new ImGuiController(
+                gl,
+                window,
+                inputContext
             );
 
             // Load Engineering Reference CSVs
@@ -89,38 +89,38 @@ namespace LiftLugCalc2
             AppState.MaterialNames = AppState.Materials.Select(m => m.Designation).ToArray();
 
             // Initialize UI Presenter
-            _gui = new GuiUI();
+            gui = new GuiController();
         }
 
         private static void OnUpdate(double delta)
         {
             // Update ImGui inputs per frame
-            _imGuiController.Update((float)delta);
+            imGuiController.Update((float)delta);
         }
 
         private static void OnRender(double delta)
         {
             // Clear background with dark engineering palette
-            _gl.ClearColor(0.1f, 0.1f, 0.13f, 1.0f);
-            _gl.Clear(ClearBufferMask.ColorBufferBit);
+            gl.ClearColor(0.1f, 0.1f, 0.13f, 1.0f);
+            gl.Clear(ClearBufferMask.ColorBufferBit);
 
             // Render Application UI
-            _gui.Render();
+            gui.Render();
 
             // Submit ImGui commands to OpenGL
-            _imGuiController.Render();
+            imGuiController.Render();
         }
 
         private static void OnFramebufferResize(Silk.NET.Maths.Vector2D<int> newSize)
         {
-            _gl.Viewport(newSize);
+            gl.Viewport(newSize);
         }
 
         private static void OnClose()
         {
-            _imGuiController?.Dispose();
-            _inputContext?.Dispose();
-            _gl?.Dispose();
+            imGuiController?.Dispose();
+            inputContext?.Dispose();
+            gl?.Dispose();
         }
     }
 }

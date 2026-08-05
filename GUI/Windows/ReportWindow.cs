@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LiftLugCalc2.GUI;
+namespace LiftLugCalc2.GUI.Windows;
 
-internal class ImGuiRenderer
+internal class ReportWindow
 {
 }

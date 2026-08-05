@@ -2,15 +2,15 @@
 
 namespace LiftLugCalc2.GUI.Windows;
 
-public static class ResultsWindow
+public static class OpenProjectWindow
 {
     public static void Render(Session state)
     {
-        ImGui.Begin("Results");
+        ImGui.Begin("Open Project");
 
-        ImGui.Text("Results page");
+        ImGui.Text("Open existing project");
 
-        if (ImGui.Button("Main Menu"))
+        if (ImGui.Button("Back"))
         {
             state.CurrentScreen = Screen.MainMenu;
         }
