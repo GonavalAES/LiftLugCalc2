@@ -2,49 +2,84 @@
 
 using LiftLugCalc2.Core.Engine;
 using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.GUI.Helpers;
 
 namespace LiftLugCalc2.GUI.Windows;
 
 public static class ForwardCalculationWindow
 {
-    private static bool _calculated;
-
     public static void Render(Session session)
     {
+        Project project = session.CurrentProject!;
+        Material material = session.SelectedMaterial!;
+        TableLug lug = session.SelectedLug!;
+
         ImGui.Begin("Forward Calculation");
 
-        if (!_calculated)
+        ImGui.SeparatorText("Review Input Data");
+
+        ImGui.Text($"Project : {project.Name}");
+        ImGui.Text($"Material: {material.Designation}");
+        ImGui.Text($"Lug ID  : {lug.LugID}");
+        ImGui.Text($"Lug Type: {LugPresentation.GetLugTypeName(lug.LugType)}");
+        ImGui.Text($"Lug WLL : {lug.LugWLL:F0} kg");
+
+        ImGui.Separator();
+
+        ImGui.Text("Design Load");
+
+        ImGui.BulletText($"Nominal Weight : {session.NominalWeightKg:F1} kg");
+        ImGui.BulletText($"Design WLL     : {project.WLL:F1} kg");
+
+        ImGui.Separator();
+
+        ImGui.Text("Lift Arrangement");
+
+        ImGui.BulletText($"Lift Points : {project.NumberPoints}");
+
+        switch (project.NumberPoints)
         {
-            ImGui.Text("Performing engineering calculations...");
+            case 2:
+                ImGui.BulletText($"A1 = {project.A1:F3} m");
+                ImGui.BulletText($"A2 = {project.A2:F3} m");
+                break;
 
-            ForwardInput input = new(
-                session.CurrentProject!,
-                session.SelectedLug!,
-                session.SelectedMaterial!);
+            case 3:
+                ImGui.BulletText($"A1 = {project.A1:F3} m");
+                ImGui.BulletText($"A2 = {project.A2:F3} m");
+                ImGui.BulletText($"B1 = {project.B1:F3} m");
+                break;
 
-            session.Result =
-                ForwardCalculator.Run(
-                    input,
-                    "1");
-
-            _calculated = true;
-
-            session.StatusMessage =
-                "Forward calculation completed.";
-
-            session.StatusType =
-                StatusType.Information;
+            case 4:
+                ImGui.BulletText($"A1 = {project.A1:F3} m");
+                ImGui.BulletText($"A2 = {project.A2:F3} m");
+                ImGui.BulletText($"B1 = {project.B1:F3} m");
+                ImGui.BulletText($"B2 = {project.B2:F3} m");
+                break;
         }
-        else
+
+        ImGui.Separator();
+
+        if (ImGui.Button("Back"))
         {
-            ImGui.Text("Calculation completed.");
+            session.CurrentScreen = Screen.LugGeometry;
+        }
 
-            if (ImGui.Button("Continue"))
-            {
-                _calculated = false;
+        ImGui.SameLine();
 
-                session.CurrentScreen = Screen.Results;
-            }
+        if (ImGui.Button("Run Calculation"))
+        {
+            ForwardInput input = new(
+                project,
+                lug,
+                material);
+
+            string choice = CalculationModeHelper.StringChoice(session.CalculationMode);
+
+            session.CurrentResult =
+                ForwardCalculator.Run(input, choice);
+
+            session.CurrentScreen = Screen.Results;
         }
 
         ImGui.End();

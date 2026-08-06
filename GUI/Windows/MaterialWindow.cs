@@ -85,9 +85,13 @@ public static class MaterialWindow
             session.CurrentProject!.SelectedMaterial = session.SelectedMaterial;
 
             if (session.CalculationMode == CalculationMode.Forward)
+            {
                 session.CurrentScreen = Screen.LugGeometry;
+            }
             else
+            {
                 session.CurrentScreen = Screen.ReverseCalculation;
+            }
         }
 
         if (!canContinue)

@@ -3,8 +3,8 @@
 public static class AppState
 {
     // Data loaded from Core
-    public static IReadOnlyList<TableLug> Lugs { get; private set; } = new List<TableLug>();
-    public static IReadOnlyList<Material> Materials { get; private set; } = new List<Material>();
+    public static IReadOnlyList<TableLug> Lugs { get; set; } = new List<TableLug>();
+    public static IReadOnlyList<Material> Materials { get; set; } = new List<Material>();
 
     public static string[] LugNames = Array.Empty<string>();
     public static string[] MaterialNames = Array.Empty<string>();

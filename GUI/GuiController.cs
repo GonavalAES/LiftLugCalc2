@@ -31,6 +31,9 @@ public sealed class GuiController
             case Screen.LugGeometry:
                 LugGeometryWindow.Render(currentSession);
                 break;
+            case Screen.CalculationMode:
+                CalculationModeWindow.Render(currentSession);
+                break;
             case Screen.ForwardCalculation:
                 ForwardCalculationWindow.Render(currentSession);
                 break;

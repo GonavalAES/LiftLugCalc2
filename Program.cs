@@ -85,8 +85,8 @@ namespace LiftLugCalc2
             // Load Engineering Reference CSVs
             AppState.Lugs = TableLugLoader.LoadFromCsv();
             AppState.Materials = MaterialLoader.LoadFromCsv();
-            AppState.LugNames = AppState.Lugs.Select(l => $"ID {l.LugID}: Type {l.LugType} ({l.LugWLL}kg)").ToArray();
-            AppState.MaterialNames = AppState.Materials.Select(m => m.Designation).ToArray();
+            AppState.LugNames = AppState.Lugs.Select(l => $"ID {l.LugID} - Type {l.LugType} - {l.LugWLL:N0} kg").ToArray();
+            AppState.MaterialNames = AppState.Materials.Select(m => $"{m.Designation}").ToArray();
 
             // Initialize UI Presenter
             gui = new GuiController();

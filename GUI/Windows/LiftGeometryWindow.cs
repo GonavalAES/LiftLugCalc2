@@ -85,7 +85,7 @@ public static class LiftGeometryWindow
 
         if (ImGui.Button("Next"))
         {
-            session.CurrentScreen = Screen.MaterialSelection;
+            session.CurrentScreen = Screen.CalculationMode;
         }
 
         ImGui.End();
