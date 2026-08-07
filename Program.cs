@@ -46,7 +46,7 @@ namespace LiftLugCalc2
         private static GL gl = null!;
         private static IInputContext inputContext = null!;
         private static ImGuiController imGuiController = null!;
-        private static GuiController gui = null!;
+        private static GuiController controller = null!;
 
         public static void Main(string[] args)
         {
@@ -88,8 +88,11 @@ namespace LiftLugCalc2
             AppState.LugNames = AppState.Lugs.Select(l => $"ID {l.LugID} - Type {l.LugType} - {l.LugWLL:N0} kg").ToArray();
             AppState.MaterialNames = AppState.Materials.Select(m => $"{m.Designation}").ToArray();
 
+            // Create application state
+            Session currentSession = new();
+
             // Initialize UI Presenter
-            gui = new GuiController();
+            controller = new GuiController(currentSession);
         }
 
         private static void OnUpdate(double delta)
@@ -105,7 +108,7 @@ namespace LiftLugCalc2
             gl.Clear(ClearBufferMask.ColorBufferBit);
 
             // Render Application UI
-            gui.Render();
+            controller.Render();
 
             // Submit ImGui commands to OpenGL
             imGuiController.Render();

@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Folder Include="GUI\Enums\" />
+    <Folder Include="GUI\Windows\Navigation\" />
   </ItemGroup>
 
 </Project>

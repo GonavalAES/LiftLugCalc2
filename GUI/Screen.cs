@@ -14,3 +14,8 @@ public enum Screen
     ReverseCalculation,
     Results
 }
+
+public record CommandButton(
+    string Text,
+    Action OnClick,
+    bool Enabled = true);

@@ -4,13 +4,13 @@ namespace LiftLugCalc2.Core.Engine;
 
 public static class PreliminaryCalculations
 {
-    public static double ChoosingWCF(string choice) =>
+    public static double ChoosingWCF(int choice) =>
         choice switch
         {
-            "1" => Constants.WCF_MEASURED,
-            "2" => Constants.WCF_DETAILED_UPDATED,
-            "3" => Constants.WCF_DETAILED_OLDER,
-            "4" => Constants.WCF_STANDARD,
+            1 => Constants.WCF_MEASURED,
+            2 => Constants.WCF_DETAILED_UPDATED,
+            3 => Constants.WCF_DETAILED_OLDER,
+            4 => Constants.WCF_STANDARD,
             _ => Constants.WCF_DEFAULT // default safe
         };
 

@@ -187,7 +187,7 @@ public sealed class ConsoleUI
 
             string wcfChoice = Console.ReadLine() ?? "";
 
-            wcf = PreliminaryCalculations.ChoosingWCF(wcfChoice);
+            wcf = PreliminaryCalculations.ChoosingWCF(int.Parse(wcfChoice));
 
             if (wcfChoice is "1" or "2" or "3" or "4") break;
 

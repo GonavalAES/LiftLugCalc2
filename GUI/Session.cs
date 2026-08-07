@@ -16,6 +16,12 @@ public sealed class Session
     public string StatusMessage { get; set; } = string.Empty;
     public StatusType StatusType { get; set; } = StatusType.Information;
 
+    public int NumberPoints { get; set; }
+    public double A1 { get; set; }
+    public double A2 { get; set; }
+    public double B1 { get; set; }
+    public double B2 { get; set; }
+
     // Temporary fields used while creating a new project.
     public string ProjectName = string.Empty;
     public string CreatedBy = string.Empty;

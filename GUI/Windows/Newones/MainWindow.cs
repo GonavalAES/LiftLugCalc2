@@ -1,0 +1,111 @@
+﻿using ImGuiNET;
+
+using System.Numerics;
+
+namespace LiftLugCalc2.GUI.Windows.Newones;
+
+public static class MainWindow
+{
+    /// <summary>
+    /// Draws the permanent application shell.
+    /// The shell remains constant throughout the application.
+    /// Only the page content changes.
+    /// </summary>
+    public static void Render(GuiController controller)
+    {
+        //--------------------------------------------------------
+        // Occupy the entire application client area.
+        //--------------------------------------------------------
+
+        Vector2 displaySize = ImGui.GetIO().DisplaySize;
+
+        ImGui.SetNextWindowPos(Vector2.Zero);
+
+        ImGui.SetNextWindowSize(displaySize);
+
+        ImGui.Begin(
+            "Lift Lug Calculator",
+            ImGuiWindowFlags.NoTitleBar
+            | ImGuiWindowFlags.NoResize
+            | ImGuiWindowFlags.NoMove
+            | ImGuiWindowFlags.NoCollapse);
+
+        //--------------------------------------------------------
+        // Calculate shell dimensions.
+        //--------------------------------------------------------
+
+        Vector2 available = ImGui.GetContentRegionAvail();
+
+        float navigationWidth = GuiLayout.NavigationWidth;
+
+        float statusHeight = GuiLayout.StatusBarHeight;
+
+        float commandHeight = GuiLayout.CommandBarHeight;
+
+        float contentHeight =
+            available.Y
+            - statusHeight
+            - commandHeight
+            - GuiLayout.Padding * 2.0f;
+
+        //--------------------------------------------------------
+        // Navigation panel
+        //--------------------------------------------------------
+
+        GuiCommon.BeginPanel(
+            "Navigation",
+            new Vector2(
+                navigationWidth,
+                contentHeight));
+
+        NavigationPanel.Render(controller);
+
+        GuiCommon.EndPanel();
+
+        ImGui.SameLine();
+
+        //--------------------------------------------------------
+        // Content panel
+        //--------------------------------------------------------
+
+        GuiCommon.BeginPanel(
+            "Content",
+            new Vector2(
+                0,
+                contentHeight));
+
+        controller.RenderCurrentPage();
+
+        GuiCommon.EndPanel();
+
+        //--------------------------------------------------------
+        // Status bar
+        //--------------------------------------------------------
+
+        GuiCommon.BeginPanel(
+            "Status",
+            new Vector2(
+                0,
+                statusHeight));
+
+        StatusBar.Render(controller);
+
+        GuiCommon.EndPanel();
+
+        //--------------------------------------------------------
+        // Command bar
+        //--------------------------------------------------------
+
+        GuiCommon.BeginPanel(
+            "Commands",
+            new Vector2(
+                0,
+                commandHeight));
+
+        CommandBar.Render(controller);
+
+        GuiCommon.EndPanel();
+
+        ImGui.End();
+    }
+}
