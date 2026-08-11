@@ -1,126 +1,229 @@
 ﻿using ImGuiNET;
 
 using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.GUI.Helpers;
 
 namespace LiftLugCalc2.GUI.Windows;
 
 public static class ResultsWindow
 {
-    public static void Render(Session session)
+    public static void Render(GuiController controller)
     {
-        if (session.CurrentResult is null)
+        Session session = controller.CurrentSession;
+        Project project = session.CurrentProject!;
+
+        GuiCommon.SectionHeader("Calculation Results");
+
+        GuiCommon.Spacer();
+
+        //--------------------------------------------------------
+        // No result
+        //--------------------------------------------------------
+
+        if (session.CurrentResult == null)
+        {
+            ImGui.Text("No suitable lug was found.");
+
+            GuiCommon.Spacer();
+
+            ImGui.TextWrapped(
+                "The calculation did not produce a valid lug selection.");
+
             return;
+        }
 
         CalculationResult result = session.CurrentResult;
 
-        ImGui.Begin("Calculation Results");
+        //--------------------------------------------------------
+        // Calculation summary
+        //--------------------------------------------------------
 
-        // Overall result
+        ImGui.Text(
+            $"Calculation : {result.CalculationType}");
 
-        ImGui.SeparatorText("Overall Result");
+        ImGui.Text(
+            $"Project : {project.Name}");
 
-        if (result.Pass)
+        GuiCommon.Spacer();
+
+        //--------------------------------------------------------
+        // Material
+        //--------------------------------------------------------
+
+        if (project.SelectedMaterial != null)
         {
-            ImGui.TextColored(
-                new System.Numerics.Vector4(0.0f, 0.8f, 0.0f, 1.0f),
-                "PASS");
-        }
-        else
-        {
-            ImGui.TextColored(
-                new System.Numerics.Vector4(0.9f, 0.2f, 0.2f, 1.0f),
-                "FAIL");
+            ImGui.Text(
+                $"Material : {project.SelectedMaterial.Designation}");
         }
 
-        ImGui.Text($"Calculation Type : {result.CalculationType}");
-        ImGui.Text($"Applied Load     : {result.AppliedLoad:F1} kN");
+        //--------------------------------------------------------
+        // Lug
+        //--------------------------------------------------------
+
+        if (project.SelectedLug != null)
+        {
+            ImGui.Text(
+                $"Lug : {LugPresentation.GetLugTypeName(project.SelectedLug.LugType)}");
+
+            ImGui.Text(
+                $"Lug ID : {project.SelectedLug.LugID}");
+
+            ImGui.Text(
+                $"Lug WLL : {project.SelectedLug.LugWLL:N0} kg");
+        }
+
+        //--------------------------------------------------------
+        // Applied load
+        //--------------------------------------------------------
+
+        GuiCommon.Spacer();
+
+        ImGui.Text(
+            $"Applied Load : {result.AppliedLoad:N1} kg");
+
+        GuiCommon.Spacer();
 
         ImGui.Separator();
 
+        GuiCommon.Spacer();
+
+        //--------------------------------------------------------
         // Engineering checks
+        //--------------------------------------------------------
 
-        ImGui.SeparatorText("Engineering Checks");
+        ImGui.Text("Engineering Checks");
 
-        ImGui.Text($"Net Section Capacity : {result.TensionCapacity:F1} kN");
-        ImGui.Text($"Safety Factor        : {result.FSTension:F2}");
+        GuiCommon.Spacer();
 
-        ImGui.Spacing();
+        if (ImGui.BeginTable(
+            "ResultsTable",
+            3,
+            ImGuiTableFlags.Borders |
+            ImGuiTableFlags.RowBg))
+        {
+            ImGui.TableSetupColumn("Check");
+            ImGui.TableSetupColumn("Capacity");
+            ImGui.TableSetupColumn("Safety Factor");
 
-        ImGui.Text($"Shear Capacity       : {result.ShearCapacity:F1} kN");
-        ImGui.Text($"Safety Factor        : {result.FSShear:F2}");
+            ImGui.TableHeadersRow();
 
-        ImGui.Spacing();
+            //----------------------------------------------------
+            // Tension
+            //----------------------------------------------------
 
-        ImGui.Text($"Bearing Capacity     : {result.BearingCapacity:F1} kN");
-        ImGui.Text($"Safety Factor        : {result.FSBearing:F2}");
+            ImGui.TableNextRow();
 
-        ImGui.Spacing();
+            ImGui.TableSetColumnIndex(0);
+            ImGui.Text("Tension");
 
-        ImGui.Text($"Tear-Out Capacity    : {result.TearOutCapacity:F1} kN");
-        ImGui.Text($"Safety Factor        : {result.FSTearOut:F2}");
+            ImGui.TableSetColumnIndex(1);
+            ImGui.Text(
+                $"{result.TensionCapacity:N1} kN");
 
-        ImGui.Spacing();
+            ImGui.TableSetColumnIndex(2);
+            ImGui.Text(
+                $"{result.FSTension:N1}");
 
-        ImGui.Text($"Weld Capacity        : {result.WeldCapacity:F1} kN");
-        ImGui.Text($"Safety Factor        : {result.FSWeld:F2}");
+            //----------------------------------------------------
+            // Shear
+            //----------------------------------------------------
 
-        ImGui.Spacing();
+            ImGui.TableNextRow();
 
-        ImGui.Text($"Minimum Safety Factor : {result.MinimumFS:F2}");
+            ImGui.TableSetColumnIndex(0);
+            ImGui.Text("Shear");
+
+            ImGui.TableSetColumnIndex(1);
+            ImGui.Text(
+                $"{result.ShearCapacity:N1} kN");
+
+            ImGui.TableSetColumnIndex(2);
+            ImGui.Text(
+                $"{result.FSShear:N1}");
+
+            //----------------------------------------------------
+            // Bearing
+            //----------------------------------------------------
+
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.Text("Bearing");
+
+            ImGui.TableSetColumnIndex(1);
+            ImGui.Text(
+                $"{result.BearingCapacity:N1} kN");
+
+            ImGui.TableSetColumnIndex(2);
+            ImGui.Text(
+                $"{result.FSBearing:N1}");
+
+            //----------------------------------------------------
+            // Tear-out
+            //----------------------------------------------------
+
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.Text("Tear-out");
+
+            ImGui.TableSetColumnIndex(1);
+            ImGui.Text(
+                $"{result.TearOutCapacity:N1} kN");
+
+            ImGui.TableSetColumnIndex(2);
+            ImGui.Text(
+                $"{result.FSTearOut:N1}");
+
+            //----------------------------------------------------
+            // Weld
+            //----------------------------------------------------
+
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.Text("Weld");
+
+            ImGui.TableSetColumnIndex(1);
+            ImGui.Text(
+                $"{result.WeldCapacity:N1} kN");
+
+            ImGui.TableSetColumnIndex(2);
+            ImGui.Text(
+                $"{result.FSWeld:N1}");
+
+            ImGui.EndTable();
+        }
+
+        GuiCommon.Spacer();
+
+        //--------------------------------------------------------
+        // Overall checks
+        //--------------------------------------------------------
+
+        ImGui.Text(
+            $"Minimum Safety Factor : {result.MinimumFS:N1}");
 
         ImGui.Text(
             $"Weld Geometry : {(result.WeldGeometryOK ? "OK" : "NOT OK")}");
 
-        ImGui.Separator();
-
-        // Next actions
-
-        ImGui.SeparatorText("Next Action");
-
-        ImGui.BeginDisabled();
-
-        ImGui.Button("Detailed Report");
-
-        ImGui.Button("Export Report");
-
-        ImGui.Button("Save Project");
-
-        ImGui.EndDisabled();
+        GuiCommon.Spacer();
 
         ImGui.Separator();
 
-        if (ImGui.Button("New Calculation"))
+        GuiCommon.Spacer();
+
+        //--------------------------------------------------------
+        // Overall result
+        //--------------------------------------------------------
+
+        if (result.Pass)
         {
-            // Reset current engineering session
-
-            session.CurrentProject = null;
-            session.SelectedMaterial = null;
-            session.SelectedLug = null;
-            session.CurrentResult = null;
-
-            session.ProjectName = string.Empty;
-            session.CreatedBy = string.Empty;
-            session.Revision = string.Empty;
-
-            session.WeightBasis = 0;
-            session.NominalWeightKg = 0.0;
-            session.WcfSelection = 1;
-
-            session.CalculationMode = CalculationMode.Forward;
-
-            session.StatusMessage = string.Empty;
-            session.StatusType = StatusType.Information;
-
-            session.CurrentScreen = Screen.NewProject;
+            ImGui.Text("OVERALL RESULT: PASS");
         }
-
-        ImGui.SameLine();
-
-        if (ImGui.Button("Main Menu"))
+        else
         {
-            session.CurrentScreen = Screen.MainMenu;
+            ImGui.Text("OVERALL RESULT: FAIL");
         }
-
-        ImGui.End();
     }
 }

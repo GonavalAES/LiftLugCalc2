@@ -1,4 +1,5 @@
 ﻿using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.GUI.Enums;
 
 namespace LiftLugCalc2.GUI;
 
@@ -34,17 +35,4 @@ public sealed class Session
 
     // Temporary fields used while creating the mode of calculation
     public CalculationMode CalculationMode = CalculationMode.Forward;
-}
-
-public enum StatusType
-{
-    Information,
-    Warning,
-    Error
-}
-
-public enum CalculationMode
-{
-    Forward,
-    Reverse
 }

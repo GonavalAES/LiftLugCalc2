@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
 
-namespace LiftLugCalc2.GUI.Windows;
+namespace LiftLugCalc2.GUI.Windows.ProjectSetups;
 
 public static class OpenProjectWindow
 {

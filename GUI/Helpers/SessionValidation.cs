@@ -1,4 +1,5 @@
-﻿namespace LiftLugCalc2.GUI.Helpers;
+﻿using LiftLugCalc2.GUI.Enums;
+namespace LiftLugCalc2.GUI.Helpers;
 
 public static class SessionValidation
 {

@@ -1,6 +1,8 @@
 ﻿using ImGuiNET;
 
-namespace LiftLugCalc2.GUI.Windows.Newones;
+using LiftLugCalc2.GUI.Enums;
+
+namespace LiftLugCalc2.GUI.Windows.Calculations;
 
 public static class CalculationModeWindow
 {

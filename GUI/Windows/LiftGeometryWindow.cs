@@ -1,6 +1,6 @@
 ﻿using ImGuiNET;
 
-namespace LiftLugCalc2.GUI.Windows.Newones;
+namespace LiftLugCalc2.GUI.Windows;
 
 public static class LiftGeometryWindow
 {
@@ -49,27 +49,54 @@ public static class LiftGeometryWindow
                 break;
 
             case 2:
+                DrawDistance(
+                    "A1 [m]",
+                    session.A1,
+                    value => session.A1 = value);
 
-                DrawDistance(ref session.A1, "A1 [m]");
-                DrawDistance(ref session.A2, "A2 [m]");
-
+                DrawDistance(
+                    "A2 [m]",
+                    session.A2,
+                    value => session.A2 = value);
                 break;
 
             case 3:
+                DrawDistance(
+                    "A1 [m]",
+                    session.A1,
+                    value => session.A1 = value);
 
-                DrawDistance(ref session.A1, "A1 [m]");
-                DrawDistance(ref session.A2, "A2 [m]");
-                DrawDistance(ref session.B1, "B1 [m]");
+                DrawDistance(
+                    "A2 [m]",
+                    session.A2,
+                    value => session.A2 = value);
 
+                DrawDistance(
+                    "B1 [m]",
+                    session.B1,
+                    value => session.B1 = value);
                 break;
 
             case 4:
+                DrawDistance(
+                    "A1 [m]",
+                    session.A1,
+                    value => session.A1 = value);
 
-                DrawDistance(ref session.A1, "A1 [m]");
-                DrawDistance(ref session.A2, "A2 [m]");
-                DrawDistance(ref session.B1, "B1 [m]");
-                DrawDistance(ref session.B2, "B2 [m]");
+                DrawDistance(
+                    "A2 [m]",
+                    session.A2,
+                    value => session.A2 = value);
 
+                DrawDistance(
+                    "B1 [m]",
+                    session.B1,
+                    value => session.B1 = value);
+
+                DrawDistance(
+                    "B2 [m]",
+                    session.B2,
+                    value => session.B2 = value);
                 break;
         }
     }
@@ -79,12 +106,17 @@ public static class LiftGeometryWindow
     //------------------------------------------------------------
 
     private static void DrawDistance(
-        ref double value,
-        string label)
+    string label,
+    double value,
+    Action<double> setter)
     {
-        double temp = value;
+        double distance = value;
 
-        if (ImGui.InputDouble(label, ref temp))
-            value = temp;
+        if (GuiCommon.InputDouble(
+                label,
+                ref distance))
+        {
+            setter(distance);
+        }
     }
 }

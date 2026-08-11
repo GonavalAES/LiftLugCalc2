@@ -1,16 +1,13 @@
 ﻿using ImGuiNET;
 
+using LiftLugCalc2.GUI.Windows.Navigation;
+
 using System.Numerics;
 
-namespace LiftLugCalc2.GUI.Windows.Newones;
+namespace LiftLugCalc2.GUI.Windows;
 
 public static class MainWindow
 {
-    /// <summary>
-    /// Draws the permanent application shell.
-    /// The shell remains constant throughout the application.
-    /// Only the page content changes.
-    /// </summary>
     public static void Render(GuiController controller)
     {
         //--------------------------------------------------------

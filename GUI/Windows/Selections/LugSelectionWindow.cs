@@ -3,7 +3,7 @@
 using LiftLugCalc2.Core.Models;
 using LiftLugCalc2.GUI.Helpers;
 
-namespace LiftLugCalc2.GUI.Windows.Newones;
+namespace LiftLugCalc2.GUI.Windows.Selections;
 
 public static class LugSelectionWindow
 {

@@ -2,7 +2,7 @@
 
 using LiftLugCalc2.Core.Models;
 
-namespace LiftLugCalc2.GUI.Windows.Newones;
+namespace LiftLugCalc2.GUI.Windows.ProjectSetups;
 
 public static class ProjectSetupWindow
 {
@@ -15,7 +15,6 @@ public static class ProjectSetupWindow
         //--------------------------------------------------------
 
         GuiCommon.SectionHeader("New Project");
-
         GuiCommon.Spacer();
 
         //--------------------------------------------------------
@@ -23,45 +22,26 @@ public static class ProjectSetupWindow
         //--------------------------------------------------------
 
         string projectName = session.ProjectName;
-
-        if (ImGui.InputText(
-            "Project Name",
-            ref projectName,
-            100))
-        {
-            session.ProjectName = projectName;
-        }
+        ImGui.SetNextItemWidth(GuiLayout.TextFieldWidth);
+        if (ImGui.InputText("Project Name", ref projectName, 100)) session.ProjectName = projectName;
 
         //--------------------------------------------------------
         // Created By
         //--------------------------------------------------------
 
         string createdBy = session.CreatedBy;
-
-        if (ImGui.InputText(
-            "Created By",
-            ref createdBy,
-            100))
-        {
-            session.CreatedBy = createdBy;
-        }
+        ImGui.SetNextItemWidth(GuiLayout.TextFieldWidth);
+        if (ImGui.InputText("Created By", ref createdBy, 100)) session.CreatedBy = createdBy;
 
         //--------------------------------------------------------
         // Revision
         //--------------------------------------------------------
 
         string revision = session.Revision;
-
-        if (ImGui.InputText(
-            "Revision",
-            ref revision,
-            30))
-        {
-            session.Revision = revision;
-        }
+        ImGui.SetNextItemWidth(GuiLayout.TextFieldWidth);
+        if (ImGui.InputText("Revision", ref revision, 30)) session.Revision = revision;
 
         GuiCommon.Spacer();
-
         ImGui.Text($"Date : {DateTime.Today.ToString(Constants.DATE_FORMAT)}");
     }
 }

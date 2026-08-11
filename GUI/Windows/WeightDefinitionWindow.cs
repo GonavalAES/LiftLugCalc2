@@ -2,7 +2,7 @@
 
 using LiftLugCalc2.Core.Models;
 
-namespace LiftLugCalc2.GUI.Windows.Newones;
+namespace LiftLugCalc2.GUI.Windows;
 
 public static class WeightDefinitionWindow
 {
@@ -42,9 +42,11 @@ public static class WeightDefinitionWindow
 
         double nominalWeight = session.NominalWeightKg;
 
-        if (ImGui.InputDouble(
-            "Value [kg]",
-            ref nominalWeight))
+        ImGui.SetNextItemWidth(90.0f);
+
+        if (GuiCommon.InputDouble(
+        "Value [kg]",
+        ref nominalWeight))
         {
             session.NominalWeightKg = nominalWeight;
         }

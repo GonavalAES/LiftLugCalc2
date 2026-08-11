@@ -2,7 +2,7 @@
 
 using LiftLugCalc2.Core.Models;
 
-namespace LiftLugCalc2.GUI.Windows.Newones;
+namespace LiftLugCalc2.GUI.Windows.Selections;
 
 public static class MaterialSelectionWindow
 {

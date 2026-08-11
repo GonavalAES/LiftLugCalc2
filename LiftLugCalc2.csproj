@@ -34,9 +34,4 @@
     <PackageReference Include="Silk.NET.OpenGL.Extensions.ImGui" Version="2.23.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="GUI\Enums\" />
-    <Folder Include="GUI\Windows\Navigation\" />
-  </ItemGroup>
-
 </Project>
