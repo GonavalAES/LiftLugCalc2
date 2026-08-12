@@ -1,4 +1,4 @@
-﻿namespace LiftLugCalc2.Core.Models
+﻿namespace LiftLugCalc2.Core.Utilities
 {
     public static class Constants
     {
@@ -52,5 +52,7 @@
         public const double RECOMMENDED_MAX_ANGLE = 45.0;   // Recommended maximum working angle
         public const double WARNING_ANGLE = 60.0;           // Large angle warning threshold
 
+        // ========== LIFT POINT SYMMETRY TOLERANCE ==========
+        public const double LIFT_POINT_SYMMETRY_TOLERANCE = 0.05; // Tolerance for lift point symmetry checks (m)
     }
 }

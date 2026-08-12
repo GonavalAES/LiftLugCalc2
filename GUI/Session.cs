@@ -9,7 +9,7 @@ namespace LiftLugCalc2.GUI;
 /// </summary>
 public sealed class Session
 {
-    public Screen CurrentScreen { get; set; } = Screen.MainMenu;
+    public ScreenEnum CurrentScreen { get; set; } = ScreenEnum.MainMenu;
     public Project? CurrentProject { get; set; }
     public Material? SelectedMaterial { get; set; }
     public TableLug? SelectedLug { get; set; }

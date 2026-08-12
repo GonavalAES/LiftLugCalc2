@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 
 using LiftLugCalc2.GUI.Enums;
+using LiftLugCalc2.GUI.Windows.ProjectSetups;
 
 namespace LiftLugCalc2.GUI.Windows.Navigation;
 
@@ -10,103 +11,260 @@ public static class CommandBar
 
     public static void Render(GuiController controller)
     {
+        //
+        // ROW 1 - Workflow commands
+        //
+
         switch (controller.CurrentScreen)
         {
-            case Screen.NewProject:
-                if (GuiCommon.Button("Back"))
+            case ScreenEnum.NewProject:
+
+                if (GuiCommon.Button("BACK"))
                 {
-                    if (controller.HasNewProjectData()) confirmCancelNewProject = true;
-                    else controller.CancelNewProject();
+                    if (controller.HasNewProjectData())
+                        confirmCancelNewProject = true;
+                    else
+                        controller.CancelNewProject();
                 }
-                AlignRight();
-                bool newProjectEnabled = !string.IsNullOrWhiteSpace(controller.CurrentSession.ProjectName);
-                if (GuiCommon.Button("Next", newProjectEnabled)) controller.CreateProject();
+
+                GuiCommon.AlignRight();
+
+                bool newProjectEnabled =
+                    !string.IsNullOrWhiteSpace(
+                        controller.CurrentSession.ProjectName);
+
+                if (GuiCommon.Button("NEXT", newProjectEnabled))
+                    controller.CreateProject();
+
                 break;
 
-            case Screen.WeightDefinition:
-                if (GuiCommon.Button("Back")) controller.CurrentSession.CurrentScreen = Screen.NewProject;
-                AlignRight();
-                bool weightEnabled = controller.CurrentSession.NominalWeightKg > 0.0;
-                if (GuiCommon.Button("Next", weightEnabled)) controller.AcceptWeightDefinition();
+
+            case ScreenEnum.WeightDefinition:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.NewProject;
+
+                GuiCommon.AlignRight();
+
+                bool weightEnabled =
+                    controller.CurrentSession.NominalWeightKg > 0.0;
+
+                if (GuiCommon.Button("NEXT", weightEnabled))
+                    controller.AcceptWeightDefinition();
+
                 break;
 
-            case Screen.LiftGeometry:
-                if (GuiCommon.Button("Back")) controller.CurrentSession.CurrentScreen = Screen.WeightDefinition;
-                AlignRight();
-                bool geometryEnabled = controller.CurrentSession.NumberPoints >= 2;
-                if (GuiCommon.Button("Next", geometryEnabled)) controller.AcceptLiftGeometry();
+
+            case ScreenEnum.LiftGeometry:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.WeightDefinition;
+
+                GuiCommon.AlignRight();
+
+                bool geometryEnabled =
+                    controller.CurrentSession.NumberPoints > 0;
+
+                if (GuiCommon.Button("NEXT", geometryEnabled))
+                    controller.AcceptLiftGeometry();
+
                 break;
 
-            case Screen.CalculationMode:
-                if (GuiCommon.Button("Back")) controller.CurrentSession.CurrentScreen = Screen.LiftGeometry;
-                AlignRight();
-                bool calculationModeEnabled = controller.CurrentSession.CalculationMode != CalculationMode.None;
-                if (GuiCommon.Button("Next", calculationModeEnabled)) controller.AcceptCalculationMode();
+
+            case ScreenEnum.CalculationMode:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.LiftGeometry;
+
+                GuiCommon.AlignRight();
+
+                bool calculationModeEnabled =
+                    controller.CurrentSession.CalculationMode
+                    != CalculationMode.None;
+
+                if (GuiCommon.Button("NEXT", calculationModeEnabled))
+                    controller.AcceptCalculationMode();
+
                 break;
 
-            case Screen.MaterialSelection:
-                if (GuiCommon.Button("Back")) controller.CurrentSession.CurrentScreen = Screen.CalculationMode;
-                AlignRight();
-                bool materialEnabled = controller.CurrentSession.SelectedMaterial is not null;
-                if (GuiCommon.Button("Next", materialEnabled)) controller.AcceptMaterialSelection();
+
+            case ScreenEnum.MaterialSelection:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.CalculationMode;
+
+                GuiCommon.AlignRight();
+
+                bool materialEnabled =
+                    controller.CurrentSession.SelectedMaterial is not null;
+
+                if (GuiCommon.Button("NEXT", materialEnabled))
+                    controller.AcceptMaterialSelection();
+
                 break;
 
-            case Screen.LugGeometry:
-                if (GuiCommon.Button("Back")) controller.CurrentSession.CurrentScreen = Screen.MaterialSelection;
-                AlignRight();
-                bool lugEnabled = controller.CurrentSession.SelectedLug is not null;
-                if (GuiCommon.Button("Next", lugEnabled)) controller.AcceptLugSelection();
+
+            case ScreenEnum.LugGeometry:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.MaterialSelection;
+
+                GuiCommon.AlignRight();
+
+                bool lugEnabled =
+                    controller.CurrentSession.SelectedLug is not null;
+
+                if (GuiCommon.Button("NEXT", lugEnabled))
+                    controller.AcceptLugSelection();
+
                 break;
 
-            case Screen.ForwardCalculation:
-                if (GuiCommon.Button("Back")) controller.CurrentSession.CurrentScreen = Screen.LugGeometry;
-                AlignRight();
-                if (GuiCommon.Button("Run")) controller.RunForwardCalculation();
+
+            case ScreenEnum.ForwardCalculation:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.LugGeometry;
+
+                GuiCommon.AlignRight();
+
+                if (GuiCommon.Button("RUN"))
+                    controller.RunForwardCalculation();
+
                 break;
 
-            case Screen.ReverseCalculation:
-                if (GuiCommon.Button("Back")) controller.CurrentSession.CurrentScreen = Screen.MaterialSelection;
-                AlignRight();
-                if (GuiCommon.Button("Run")) controller.RunReverseCalculation();
+
+            case ScreenEnum.ReverseCalculation:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.MaterialSelection;
+
+                GuiCommon.AlignRight();
+
+                if (GuiCommon.Button("RUN"))
+                    controller.RunReverseCalculation();
+
                 break;
 
-            case Screen.Results:
-                AlignRight();
-                if (GuiCommon.Button("New Calculation")) controller.CurrentSession.CurrentScreen = Screen.MainMenu;
+
+            case ScreenEnum.Results:
+
+                if (GuiCommon.Button("BACK"))
+                    controller.CurrentScreen = ScreenEnum.CalculationMode;
+
+                ImGui.SameLine();
+                GuiCommon.AlignCenter();
+
+                if (GuiCommon.Button("MODIFY / RE-RUN"))
+                    controller.ModifyCalculation();
+
                 break;
+
 
             default:
                 break;
         }
 
+
+        //
+        // ROW 2 - Project commands
+        //
+
+        ImGui.Separator();
+
+        if (GuiCommon.Button("NEW"))
+        {
+            if (controller.CurrentSession.CurrentProject is not null ||
+                controller.HasNewProjectData())
+            {
+                ImGui.OpenPopup("New Project Confirmation");
+            }
+            else
+            {
+                controller.StartNewProject();
+            }
+        }
+
+        ImGui.SameLine();
+
+        if (GuiCommon.Button("OPEN"))
+        {
+            OpenProjectWindow.Open();
+        }
+
+        ImGui.SameLine();
+
+        if (GuiCommon.Button("SAVE"))
+        {
+            controller.SaveProject();
+        }
+
+
+        // NEW PROJECT confirmation
+        if (ImGui.BeginPopupModal(
+            "New Project Confirmation",
+            ImGuiWindowFlags.AlwaysAutoResize))
+        {
+            ImGui.Text(
+                "Start a new project?\n\n" +
+                "The current project and calculation result will be discarded.");
+
+            GuiCommon.Spacer();
+
+            if (GuiCommon.Button("CANCEL"))
+            {
+                ImGui.CloseCurrentPopup();
+            }
+
+            ImGui.SameLine();
+            GuiCommon.AlignRight();
+
+            if (GuiCommon.Button("NEW PROJECT"))
+            {
+                ImGui.CloseCurrentPopup();
+                controller.StartNewProject();
+            }
+
+            ImGui.EndPopup();
+        }
+
+        // OPEN PROJECT window
+        OpenProjectWindow.Render(controller);
+
+        // ABANDON NEW PROJECT confirmation
         DrawCancelNewProjectPopup(controller);
     }
 
-    private static void AlignRight()
-    {
-        float buttonX = ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - GuiLayout.ButtonWidth;
-        ImGui.SameLine(buttonX);
-    }
 
-    private static void DrawCancelNewProjectPopup(GuiController controller)
+    private static void DrawCancelNewProjectPopup(
+        GuiController controller)
     {
         if (confirmCancelNewProject)
         {
             ImGui.OpenPopup("Abandon New Project");
             confirmCancelNewProject = false;
         }
-        if (ImGui.BeginPopupModal("Abandon New Project", ImGuiWindowFlags.AlwaysAutoResize))
+
+        if (ImGui.BeginPopupModal(
+            "Abandon New Project",
+            ImGuiWindowFlags.AlwaysAutoResize))
         {
-            ImGui.Text("The entered project information will be lost.");
+            ImGui.Text(
+                "The entered project information will be lost.");
+
             ImGui.Spacing();
-            if (ImGui.Button("Cancel")) ImGui.CloseCurrentPopup();
+
+            if (ImGui.Button("CANCEL"))
+                ImGui.CloseCurrentPopup();
+
             ImGui.SameLine();
-            AlignRight();
-            if (ImGui.Button("Abandon"))
+            GuiCommon.AlignRight();
+
+            if (ImGui.Button("ABANDON"))
             {
                 controller.CancelNewProject();
                 ImGui.CloseCurrentPopup();
             }
+
             ImGui.EndPopup();
         }
     }

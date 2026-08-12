@@ -49,6 +49,7 @@ public static class LiftGeometryWindow
                 break;
 
             case 2:
+                GuiCommon.Spacer();
                 DrawDistance(
                     "A1 [m]",
                     session.A1,
@@ -61,6 +62,7 @@ public static class LiftGeometryWindow
                 break;
 
             case 3:
+                GuiCommon.Spacer();
                 DrawDistance(
                     "A1 [m]",
                     session.A1,
@@ -78,6 +80,7 @@ public static class LiftGeometryWindow
                 break;
 
             case 4:
+                GuiCommon.Spacer();
                 DrawDistance(
                     "A1 [m]",
                     session.A1,
@@ -105,18 +108,10 @@ public static class LiftGeometryWindow
     // Helpers
     //------------------------------------------------------------
 
-    private static void DrawDistance(
-    string label,
-    double value,
-    Action<double> setter)
+    private static void DrawDistance(string label, double value, Action<double> setter)
     {
         double distance = value;
-
-        if (GuiCommon.InputDouble(
-                label,
-                ref distance))
-        {
-            setter(distance);
-        }
+        ImGui.SetNextItemWidth(GuiConstants.DEFAULT_TextFieldWidth);
+        if (GuiCommon.InputDouble(label, ref distance)) setter(distance);
     }
 }

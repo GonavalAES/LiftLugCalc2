@@ -10,23 +10,23 @@ public static class NavigationPanel
     {
         GuiCommon.SectionHeader("Project");
 
-        DrawStep(controller, "Project Setup", Screen.NewProject);
-        DrawStep(controller, "Weight", Screen.WeightDefinition);
-        DrawStep(controller, "Lift Geometry", Screen.LiftGeometry);
-        DrawStep(controller, "Calculation Mode", Screen.CalculationMode);
-        DrawStep(controller, "Material", Screen.MaterialSelection);
+        DrawStep(controller, "Project Setup", ScreenEnum.NewProject);
+        DrawStep(controller, "Weight", ScreenEnum.WeightDefinition);
+        DrawStep(controller, "Lift Geometry", ScreenEnum.LiftGeometry);
+        DrawStep(controller, "Calculation Mode", ScreenEnum.CalculationMode);
+        DrawStep(controller, "Material", ScreenEnum.MaterialSelection);
 
         if (controller.CurrentSession.CalculationMode == CalculationMode.Forward)
-            DrawStep(controller, "Lug", Screen.LugGeometry);
+            DrawStep(controller, "Lug", ScreenEnum.LugGeometry);
         if (controller.CurrentSession.CalculationMode == CalculationMode.Forward && controller.CurrentSession.SelectedLug is not null)
-            DrawStep(controller, "Run", Screen.ForwardCalculation);
+            DrawStep(controller, "Run", ScreenEnum.ForwardCalculation);
         else if (controller.CurrentSession.CalculationMode == CalculationMode.Reverse && controller.CurrentSession.SelectedMaterial is not null)
-            DrawStep(controller, "Run", Screen.ReverseCalculation);
+            DrawStep(controller, "Run", ScreenEnum.ReverseCalculation);
 
-        DrawStep(controller, "Results", Screen.Results);
+        DrawStep(controller, "Results", ScreenEnum.Results);
     }
 
-    private static void DrawStep(GuiController controller, string label, Screen screen)
+    private static void DrawStep(GuiController controller, string label, ScreenEnum screen)
     {
         bool enabled = controller.CanNavigateTo(screen);
         bool selected = controller.CurrentScreen == screen;

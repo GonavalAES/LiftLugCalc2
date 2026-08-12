@@ -1,5 +1,7 @@
 ﻿using LiftLugCalc2.Core.Engine;
+using LiftLugCalc2.Core.FileOperations;
 using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.Core.Utilities;
 using LiftLugCalc2.GUI.Enums;
 using LiftLugCalc2.GUI.Windows;
 using LiftLugCalc2.GUI.Windows.Calculations;
@@ -11,31 +13,22 @@ namespace LiftLugCalc2.GUI;
 
 public sealed class GuiController
 {
-    //------------------------------------------------------------
     // Current engineering session
-    //------------------------------------------------------------
-
     public Session CurrentSession { get; }
 
-    //------------------------------------------------------------
     // Constructor
-    //------------------------------------------------------------
-
     public GuiController(Session session)
     {
         CurrentSession = session;
     }
 
-    public Screen CurrentScreen
+    public ScreenEnum CurrentScreen
     {
         get => CurrentSession.CurrentScreen;
         set => CurrentSession.CurrentScreen = value;
     }
 
-    //------------------------------------------------------------
     // Render application
-    //------------------------------------------------------------
-
     public void Render()
     {
         MainWindow.Render(this);
@@ -45,56 +38,53 @@ public sealed class GuiController
     {
         switch (CurrentSession.CurrentScreen)
         {
-            case Screen.MainMenu:
+            case ScreenEnum.MainMenu:
                 MenuWindow.Render(this);
                 break;
 
-            case Screen.NewProject:
+            case ScreenEnum.NewProject:
                 ProjectSetupWindow.Render(this);
                 break;
             /*
-        case Screen.OpenProject:
+        case ScreenEnum.OpenProject:
             OpenProjectWindow.Render(this);
             break;
             */
-            case Screen.WeightDefinition:
+            case ScreenEnum.WeightDefinition:
                 WeightDefinitionWindow.Render(this);
                 break;
 
-            case Screen.LiftGeometry:
+            case ScreenEnum.LiftGeometry:
                 LiftGeometryWindow.Render(this);
                 break;
 
-            case Screen.CalculationMode:
+            case ScreenEnum.CalculationMode:
                 CalculationModeWindow.Render(this);
                 break;
 
-            case Screen.MaterialSelection:
+            case ScreenEnum.MaterialSelection:
                 MaterialSelectionWindow.Render(this);
                 break;
 
-            case Screen.LugGeometry:
+            case ScreenEnum.LugGeometry:
                 LugSelectionWindow.Render(this);
                 break;
 
-            case Screen.ForwardCalculation:
+            case ScreenEnum.ForwardCalculation:
                 ForwardCalculationWindow.Render(this);
                 break;
 
-            case Screen.ReverseCalculation:
+            case ScreenEnum.ReverseCalculation:
                 ReverseCalculationWindow.Render(this);
                 break;
 
-            case Screen.Results:
+            case ScreenEnum.Results:
                 ResultsWindow.Render(this);
                 break;
         }
     }
 
-    //------------------------------------------------------------
-    // Workflow
-    //------------------------------------------------------------
-
+    // Workflow Methods
     public void CreateProject()
     {
         CurrentSession.CurrentProject = new Project
@@ -109,7 +99,137 @@ public sealed class GuiController
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = "Project created. Define the weight.";
 
-        CurrentSession.CurrentScreen = Screen.WeightDefinition;
+        CurrentSession.CurrentScreen = ScreenEnum.WeightDefinition;
+    }
+
+    public void StartNewProject()
+    {
+        CurrentSession.ProjectName = string.Empty;
+        CurrentSession.CreatedBy = string.Empty;
+        CurrentSession.Revision = string.Empty;
+        CurrentSession.CurrentProject = null;
+
+        CurrentSession.NominalWeightKg = 0.0;
+        CurrentSession.WcfSelection = 0;
+
+        CurrentSession.NumberPoints = 0;
+        CurrentSession.A1 = 0.0;
+        CurrentSession.A2 = 0.0;
+        CurrentSession.B1 = 0.0;
+        CurrentSession.B2 = 0.0;
+
+        CurrentSession.CalculationMode = CalculationMode.None;
+        CurrentSession.SelectedMaterial = null;
+        CurrentSession.SelectedLug = null;
+
+        CurrentSession.CurrentResult = null;
+
+        CurrentScreen = ScreenEnum.NewProject;
+
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage = "Enter the new project information.";
+    }
+
+    public void OpenProject(string projectName)
+    {
+        if (string.IsNullOrWhiteSpace(projectName))
+        {
+            CurrentSession.StatusType = StatusType.Warning;
+            CurrentSession.StatusMessage = "No project was selected.";
+            return;
+        }
+
+        string projectDir = FilingSystem.GetProjectDirectory(projectName);
+        string projectFile = Path.Combine(projectDir, "project.txt");
+
+        if (!File.Exists(projectFile))
+        {
+            CurrentSession.StatusType = StatusType.Error;
+            CurrentSession.StatusMessage = "Project file was not found.";
+            return;
+        }
+
+        string text = File.ReadAllText(projectFile);
+
+        Project project = Formatter.ProjectFormatter.FromText(text);
+
+        project.SelectedLug = null;
+        project.SelectedMaterial = null;
+
+        if (project.UserLugID.HasValue)
+        {
+            project.SelectedLug =
+                AppState.Lugs.FirstOrDefault(
+                    lug => lug.LugID == project.UserLugID.Value);
+        }
+
+        if (project.UserMaterialID.HasValue)
+        {
+            project.SelectedMaterial =
+                AppState.Materials.FirstOrDefault(
+                    material => material.MaterialID == project.UserMaterialID.Value);
+        }
+
+        CurrentSession.CurrentProject = project;
+
+        CurrentSession.ProjectName = project.Name;
+        CurrentSession.CreatedBy = project.CreatedBy;
+        CurrentSession.Revision = project.Revision;
+
+        CurrentSession.NumberPoints = project.NumberPoints;
+        CurrentSession.A1 = project.A1;
+        CurrentSession.A2 = project.A2;
+        CurrentSession.B1 = project.B1;
+        CurrentSession.B2 = project.B2;
+
+        CurrentSession.SelectedLug = project.SelectedLug;
+        CurrentSession.SelectedMaterial = project.SelectedMaterial;
+
+        CurrentSession.CurrentResult = null;
+
+        CurrentSession.CurrentScreen = ScreenEnum.NewProject;
+
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage =
+            $"Project loaded: {project.Name}";
+    }
+
+    public void SaveProject()
+    {
+        Project? project = CurrentSession.CurrentProject;
+
+        if (project is null)
+        {
+            if (string.IsNullOrWhiteSpace(CurrentSession.ProjectName))
+            {
+                CurrentSession.StatusType = StatusType.Warning;
+                CurrentSession.StatusMessage = "Project name is required before saving.";
+                return;
+            }
+
+            project = new Project
+            {
+                ProjectID = 0,
+                Name = CurrentSession.ProjectName,
+                CreatedBy = CurrentSession.CreatedBy,
+                Revision = CurrentSession.Revision,
+                Date = DateTime.Today.ToString(Constants.DATE_FORMAT)
+            };
+
+            CurrentSession.CurrentProject = project;
+        }
+
+        if (project.SelectedLug is not null) project.UserLugID = project.SelectedLug.LugID;
+        if (project.SelectedMaterial is not null) project.UserMaterialID = project.SelectedMaterial.MaterialID;
+
+        string projectDir = FilingSystem.GetProjectDirectory(project.Name);
+        string projectFile = Path.Combine(projectDir, "project.txt");
+        string text = Formatter.ProjectFormatter.ToText(project);
+
+        FilingSystem.SaveTextFile(projectFile, text);
+
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage = "Project saved successfully.";
     }
 
     public void CancelNewProject()
@@ -119,7 +239,7 @@ public sealed class GuiController
         CurrentSession.Revision = string.Empty;
 
         CurrentSession.CurrentProject = null;
-        CurrentSession.CurrentScreen = Screen.MainMenu;
+        CurrentSession.CurrentScreen = ScreenEnum.MainMenu;
 
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = "New project cancelled.";
@@ -133,7 +253,7 @@ public sealed class GuiController
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = "Weight definition accepted. Define lift geometry.";
 
-        CurrentSession.CurrentScreen = Screen.LiftGeometry;
+        CurrentSession.CurrentScreen = ScreenEnum.LiftGeometry;
     }
 
     public void AcceptLiftGeometry()
@@ -149,13 +269,13 @@ public sealed class GuiController
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = "Lift geometry defined. Define calculation mode.";
 
-        CurrentScreen = Screen.CalculationMode;
+        CurrentScreen = ScreenEnum.CalculationMode;
     }
 
     public void AcceptCalculationMode()
     {
-        if (CurrentSession.CalculationMode == CalculationMode.Forward) CurrentScreen = Screen.MaterialSelection;
-        else CurrentScreen = Screen.MaterialSelection;
+        if (CurrentSession.CalculationMode == CalculationMode.Forward) CurrentScreen = ScreenEnum.MaterialSelection;
+        else CurrentScreen = ScreenEnum.MaterialSelection;
     }
 
     public void AcceptMaterialSelection()
@@ -165,8 +285,8 @@ public sealed class GuiController
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = "Material selected. Choose calculation mode";
 
-        if (CurrentSession.CalculationMode == CalculationMode.Forward) CurrentScreen = Screen.LugGeometry;
-        else CurrentScreen = Screen.ReverseCalculation;
+        if (CurrentSession.CalculationMode == CalculationMode.Forward) CurrentScreen = ScreenEnum.LugGeometry;
+        else CurrentScreen = ScreenEnum.ReverseCalculation;
     }
 
     public void AcceptLugSelection()
@@ -176,7 +296,7 @@ public sealed class GuiController
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = "Lug selected. Running forward calculation.";
 
-        CurrentScreen = Screen.ForwardCalculation;
+        CurrentScreen = ScreenEnum.ForwardCalculation;
     }
 
     public void RunForwardCalculation()
@@ -186,7 +306,7 @@ public sealed class GuiController
                                  CurrentSession.CurrentProject!.SelectedMaterial!);
 
         CurrentSession.CurrentResult = ForwardCalculator.Run(input, "1");
-        CurrentScreen = Screen.Results;
+        CurrentScreen = ScreenEnum.Results;
     }
 
     public void RunReverseCalculation()
@@ -207,93 +327,32 @@ public sealed class GuiController
         }
 
         CurrentSession.CurrentResult = selection.Best?.Result;
-        CurrentScreen = Screen.Results;
+        CurrentScreen = ScreenEnum.Results;
     }
 
+    public void ModifyCalculation()
+    {
+        CurrentSession.CurrentResult = null;
+        CurrentScreen = ScreenEnum.CalculationMode;
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage = "Modify the calculation data and run again.";
+    }
 
-    //------------------------------------------------------------
     // Helper Methods
-    //------------------------------------------------------------
     public bool HasNewProjectData()
         => !string.IsNullOrWhiteSpace(CurrentSession.ProjectName) ||
            !string.IsNullOrWhiteSpace(CurrentSession.CreatedBy) ||
            !string.IsNullOrWhiteSpace(CurrentSession.Revision);
 
-    public void NavigateTo(Screen screen)
+    public void NavigateTo(ScreenEnum screen)
     {
         if (!CanNavigateTo(screen)) return;
         CurrentSession.CurrentScreen = screen;
     }
 
-    public bool CanNavigateTo(Screen screen)
-    {
-        bool hasProject = CurrentSession.CurrentProject is not null;
-        bool hasWeight = hasProject && CurrentSession.CurrentProject!.WLL > 0.0;
-        bool hasLiftGeometry = hasWeight && CurrentSession.NumberPoints >= 2;
-        bool hasCalculationMode = hasLiftGeometry && CurrentSession.CalculationMode != CalculationMode.None;
-        bool hasMaterial = hasCalculationMode && CurrentSession.SelectedMaterial is not null;
-        bool hasLug = hasMaterial && CurrentSession.SelectedLug is not null;
-
-        return screen switch
-        {
-            Screen.NewProject => true,
-            Screen.WeightDefinition => hasProject,
-            Screen.LiftGeometry => hasWeight,
-            Screen.CalculationMode => hasLiftGeometry,
-            Screen.MaterialSelection => hasCalculationMode,
-            Screen.LugGeometry => CurrentSession.CalculationMode == CalculationMode.Forward && hasMaterial,
-            Screen.ForwardCalculation => CurrentSession.CalculationMode == CalculationMode.Forward && hasLug,
-            Screen.ReverseCalculation => CurrentSession.CalculationMode == CalculationMode.Reverse && hasMaterial,
-            Screen.Results => CurrentSession.CurrentResult is not null,
-            _ => false
-        };
-    }
-
-    public bool IsStepComplete(Screen screen)
-    {
 
 
-        switch (screen)
-        {
-            case Screen.NewProject:
-                return CurrentSession.CurrentProject is not null;
-
-            case Screen.WeightDefinition:
-                return
-                    CurrentSession.CurrentProject is not null &&
-                    CurrentSession.CurrentProject.WLL > 0.0;
-
-            case Screen.LiftGeometry:
-                return
-                    CurrentSession.CurrentProject is not null &&
-                    CurrentSession.NumberPoints >= 2;
-
-            case Screen.CalculationMode:
-                return
-                    CurrentSession.CalculationMode != CalculationMode.None;
-
-            case Screen.MaterialSelection:
-                return
-                    CurrentSession.SelectedMaterial is not null;
-
-            case Screen.LugGeometry:
-                return
-                    CurrentSession.CalculationMode == CalculationMode.Forward &&
-                    CurrentSession.SelectedLug is not null;
-
-            case Screen.ForwardCalculation:
-            case Screen.ReverseCalculation:
-                return CurrentSession.CurrentResult is not null;
-
-            case Screen.Results:
-                return CurrentSession.CurrentResult is not null;
-
-            default:
-                return false;
-        }
-    }
-
-    public bool HasStepProblem(Screen screen)
+    public bool HasStepProblem(ScreenEnum screen)
     {
         bool hasProject = CurrentSession.CurrentProject is not null && !string.IsNullOrWhiteSpace(CurrentSession.ProjectName);
         bool hasNoWeight = CurrentSession.NominalWeightKg <= 0.0;
@@ -302,10 +361,82 @@ public sealed class GuiController
 
         return screen switch
         {
-            Screen.NewProject => hasProject,
-            Screen.WeightDefinition => hasProject && hasNoWeight,
-            Screen.LiftGeometry => hasProject && numberPointsGTZero && numberPointsLTTwo,
+            ScreenEnum.NewProject => hasProject,
+            ScreenEnum.WeightDefinition => hasProject && hasNoWeight,
+            ScreenEnum.LiftGeometry => hasProject && numberPointsGTZero && numberPointsLTTwo,
             _ => false
         };
+    }
+
+    public bool CanNavigateTo(ScreenEnum screen)
+    {
+        bool hasProject = CurrentSession.CurrentProject is not null;
+        bool hasWeight = hasProject && CurrentSession.CurrentProject!.WLL > 0.0;
+        bool hasLiftGeometry = hasWeight && CurrentSession.NumberPoints > 0;
+        bool hasCalculationMode = hasLiftGeometry && CurrentSession.CalculationMode != CalculationMode.None;
+        bool hasMaterial = hasCalculationMode && CurrentSession.SelectedMaterial is not null;
+        bool hasLug = hasMaterial && CurrentSession.SelectedLug is not null;
+
+        return screen switch
+        {
+            ScreenEnum.NewProject => true,
+            ScreenEnum.WeightDefinition => hasProject,
+            ScreenEnum.LiftGeometry => hasWeight,
+            ScreenEnum.CalculationMode => hasLiftGeometry,
+            ScreenEnum.MaterialSelection => hasCalculationMode,
+            ScreenEnum.LugGeometry => CurrentSession.CalculationMode == CalculationMode.Forward && hasMaterial,
+            ScreenEnum.ForwardCalculation => CurrentSession.CalculationMode == CalculationMode.Forward && hasLug,
+            ScreenEnum.ReverseCalculation => CurrentSession.CalculationMode == CalculationMode.Reverse && hasMaterial,
+            ScreenEnum.Results => CurrentSession.CurrentResult is not null,
+            _ => false
+        };
+    }
+
+    public bool IsStepComplete(ScreenEnum screen)
+    {
+        bool hasProject = CurrentSession.CurrentProject is not null;
+        bool hasWeight = hasProject && CurrentSession.CurrentProject!.WLL > 0.0;
+        bool hasNumberPoints = hasProject && CurrentSession.NumberPoints > 0;
+        bool hasCalculationMode = CurrentSession.CalculationMode != CalculationMode.None;
+        bool hasMaterial = CurrentSession.SelectedMaterial is not null;
+        bool hasLug = CurrentSession.CalculationMode == CalculationMode.Forward && CurrentSession.SelectedLug is not null;
+        bool hasResult = CurrentSession.CurrentResult is not null;
+
+        return screen switch
+        {
+            ScreenEnum.NewProject => hasProject,
+            ScreenEnum.WeightDefinition => hasWeight,
+            ScreenEnum.LiftGeometry => hasNumberPoints,
+            ScreenEnum.CalculationMode => hasCalculationMode,
+            ScreenEnum.MaterialSelection => hasMaterial,
+            ScreenEnum.LugGeometry => hasLug,
+            ScreenEnum.ForwardCalculation => hasResult,
+            ScreenEnum.ReverseCalculation => hasResult,
+            ScreenEnum.Results => hasResult,
+            _ => false
+        };
+    }
+
+    public string GetLiftGeometryWarning()
+    {
+        Session session = CurrentSession;
+        if (session.NumberPoints < 2) return string.Empty;
+        double ratio = AsymmetryRatio(session.A1, session.A2);
+        if (ratio > Constants.LIFT_POINT_SYMMETRY_TOLERANCE)
+            return $"Warning: A1 and A2 differ by {ratio * 100.0:F1} percent. Verify the lifting arrangement and load distribution.";
+        if (session.NumberPoints == 4)
+        {
+            ratio = AsymmetryRatio(session.B1, session.B2);
+            if (ratio > Constants.LIFT_POINT_SYMMETRY_TOLERANCE)
+                return $"Warning: B1 and B2 differ by {ratio * 100.0:F1} percent. Verify the lifting arrangement and load distribution.";
+        }
+        return string.Empty;
+    }
+
+    private static double AsymmetryRatio(double first, double second)
+    {
+        double reference = Math.Max(Math.Abs(first), Math.Abs(second));
+        if (reference <= 0.0) return 0.0;
+        return Math.Abs(first - second) / reference;
     }
 }

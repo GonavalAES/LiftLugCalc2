@@ -1,5 +1,4 @@
-﻿using LiftLugCalc2.Core.Models;
-using LiftLugCalc2.Core.Utilities;
+﻿using LiftLugCalc2.Core.Utilities;
 
 namespace LiftLugCalc2.ConsoleFrontEnd;
 

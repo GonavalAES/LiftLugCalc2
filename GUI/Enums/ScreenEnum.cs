@@ -1,6 +1,6 @@
-﻿namespace LiftLugCalc2.GUI;
+﻿namespace LiftLugCalc2.GUI.Enums;
 
-public enum Screen
+public enum ScreenEnum
 {
     MainMenu,
     NewProject,
@@ -14,8 +14,3 @@ public enum Screen
     ReverseCalculation,
     Results
 }
-
-public record CommandButton(
-    string Text,
-    Action OnClick,
-    bool Enabled = true);

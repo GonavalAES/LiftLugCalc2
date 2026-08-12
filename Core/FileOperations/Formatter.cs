@@ -28,7 +28,7 @@ public static class Formatter
             sb.AppendLine($"A1={project.A1}");
             sb.AppendLine($"A2={project.A2}");
             sb.AppendLine($"B1={project.B1}");
-            sb.AppendLine($"B2= {project.B2}");
+            sb.AppendLine($"B2={project.B2}");
 
             sb.AppendLine("[LUG & MATERIAL SELECTION]");
             sb.AppendLine($"UserLugID={project.UserLugID?.ToString() ?? ""}");
@@ -56,7 +56,7 @@ public static class Formatter
                     case "ProjectID":
                         project.ProjectID = int.Parse(value);
                         break;
-                    case "Name":
+                    case "ProjectName":
                         project.Name = value;
                         break;
                     case "CreatedBy":
@@ -87,12 +87,10 @@ public static class Formatter
                         project.B2 = double.Parse(value, CultureInfo.InvariantCulture);
                         break;
                     case "UserLugID":
-                        if (!string.IsNullOrWhiteSpace(value))
-                            project.UserLugID = int.Parse(value);
+                        if (!string.IsNullOrWhiteSpace(value)) project.UserLugID = int.Parse(value);
                         break;
                     case "UserMaterialID":
-                        if (!string.IsNullOrWhiteSpace(value))
-                            project.UserMaterialID = int.Parse(value);
+                        if (!string.IsNullOrWhiteSpace(value)) project.UserMaterialID = int.Parse(value);
                         break;
                 }
             }
@@ -102,7 +100,5 @@ public static class Formatter
     }
 
     public static string FormatDate(string dateString)
-    {
-        return DateTime.TryParse(dateString, out var parsed) ? parsed.ToString("dd-MM-yyyy") : DateTime.Today.ToString("dd-MM-yyyy");
-    }
+        => DateTime.TryParse(dateString, out var parsed) ? parsed.ToString("dd-MM-yyyy") : DateTime.Today.ToString("dd-MM-yyyy");
 }

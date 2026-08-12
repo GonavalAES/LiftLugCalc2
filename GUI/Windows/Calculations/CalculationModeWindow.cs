@@ -11,11 +11,8 @@ public static class CalculationModeWindow
         Session session = controller.CurrentSession;
 
         GuiCommon.SectionHeader("Calculation Mode");
-
         GuiCommon.Spacer();
-
         ImGui.Text("Select the type of calculation to perform:");
-
         GuiCommon.Spacer();
 
         CalculationMode mode = session.CalculationMode;
@@ -23,35 +20,14 @@ public static class CalculationModeWindow
         bool forward = mode == CalculationMode.Forward;
         bool reverse = mode == CalculationMode.Reverse;
 
-        if (ImGui.RadioButton(
-            "Forward Calculation",
-            forward))
-        {
-            session.CalculationMode = CalculationMode.Forward;
-        }
-
-        if (ImGui.RadioButton(
-            "Reverse Calculation",
-            reverse))
-        {
-            session.CalculationMode = CalculationMode.Reverse;
-        }
+        if (ImGui.RadioButton("Forward Calculation", forward)) session.CalculationMode = CalculationMode.Forward;
+        if (ImGui.RadioButton("Reverse Calculation", reverse)) session.CalculationMode = CalculationMode.Reverse;
 
         GuiCommon.Spacer();
-
         ImGui.Separator();
-
         GuiCommon.Spacer();
 
-        if (session.CalculationMode == CalculationMode.Forward)
-        {
-            ImGui.TextWrapped(
-                "Checks a selected lug against the specified load.");
-        }
-        else
-        {
-            ImGui.TextWrapped(
-                "Suggests the smallest suitable lug for the specified load.");
-        }
+        if (session.CalculationMode == CalculationMode.Forward) ImGui.TextWrapped("Checks a selected lug against the specified load.");
+        else ImGui.TextWrapped("Suggests the smallest suitable lug for the specified load.");
     }
 }
