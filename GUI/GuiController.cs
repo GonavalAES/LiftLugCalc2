@@ -45,11 +45,7 @@ public sealed class GuiController
             case ScreenEnum.NewProject:
                 ProjectSetupWindow.Render(this);
                 break;
-            /*
-        case ScreenEnum.OpenProject:
-            OpenProjectWindow.Render(this);
-            break;
-            */
+
             case ScreenEnum.WeightDefinition:
                 WeightDefinitionWindow.Render(this);
                 break;
@@ -149,32 +145,27 @@ public sealed class GuiController
             return;
         }
 
-        string text = File.ReadAllText(projectFile);
-
+        string text = FilingSystem.LoadTextFile(projectFile);
         Project project = Formatter.ProjectFormatter.FromText(text);
 
         project.SelectedLug = null;
         project.SelectedMaterial = null;
 
         if (project.UserLugID.HasValue)
-        {
-            project.SelectedLug =
-                AppState.Lugs.FirstOrDefault(
-                    lug => lug.LugID == project.UserLugID.Value);
-        }
+            project.SelectedLug = AppState.Lugs.FirstOrDefault(lug => lug.LugID == project.UserLugID.Value);
 
         if (project.UserMaterialID.HasValue)
-        {
-            project.SelectedMaterial =
-                AppState.Materials.FirstOrDefault(
-                    material => material.MaterialID == project.UserMaterialID.Value);
-        }
+            project.SelectedMaterial = AppState.Materials.FirstOrDefault(material => material.MaterialID == project.UserMaterialID.Value);
 
         CurrentSession.CurrentProject = project;
 
         CurrentSession.ProjectName = project.Name;
         CurrentSession.CreatedBy = project.CreatedBy;
         CurrentSession.Revision = project.Revision;
+
+        CurrentSession.WeightBasis = project.WeightBasis;
+        CurrentSession.NominalWeightKg = project.NominalWeightKg;
+        CurrentSession.WcfSelection = project.WcfSelection;
 
         CurrentSession.NumberPoints = project.NumberPoints;
         CurrentSession.A1 = project.A1;
@@ -190,8 +181,7 @@ public sealed class GuiController
         CurrentSession.CurrentScreen = ScreenEnum.NewProject;
 
         CurrentSession.StatusType = StatusType.Information;
-        CurrentSession.StatusMessage =
-            $"Project loaded: {project.Name}";
+        CurrentSession.StatusMessage = $"Project loaded: {project.Name}";
     }
 
     public void SaveProject()
@@ -218,6 +208,10 @@ public sealed class GuiController
 
             CurrentSession.CurrentProject = project;
         }
+
+        project.WeightBasis = CurrentSession.WeightBasis;
+        project.NominalWeightKg = CurrentSession.NominalWeightKg;
+        project.WcfSelection = CurrentSession.WcfSelection;
 
         if (project.SelectedLug is not null) project.UserLugID = project.SelectedLug.LugID;
         if (project.SelectedMaterial is not null) project.UserMaterialID = project.SelectedMaterial.MaterialID;
@@ -338,6 +332,39 @@ public sealed class GuiController
         CurrentSession.StatusMessage = "Modify the calculation data and run again.";
     }
 
+    public void GenerateReport()
+    {
+        Project? project = CurrentSession.CurrentProject;
+        CalculationResult? result = CurrentSession.CurrentResult;
+
+        if (project is null)
+        {
+            CurrentSession.StatusType = StatusType.Warning;
+            CurrentSession.StatusMessage = "No project is currently open.";
+            return;
+        }
+
+        if (result is null)
+        {
+            CurrentSession.StatusType = StatusType.Warning;
+            CurrentSession.StatusMessage = "No calculation result is available.";
+            return;
+        }
+
+        FilingSystem.EnsureProjectDirectory(project.Name);
+
+        string resultsDir = FilingSystem.GetProjectDirectory(project.Name);
+        string timestamp = DateTime.Now.ToString("dd-MM-yyyy");
+
+        string reportFile = Path.Combine(resultsDir, $"Report_{timestamp}.txt");
+        string reportText = ReportGenerator.GenerateDetailedReport(project, result);
+
+        FilingSystem.SaveTextFile(reportFile, reportText);
+
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage = $"Report saved successfully.";
+    }
+
     // Helper Methods
     public bool HasNewProjectData()
         => !string.IsNullOrWhiteSpace(CurrentSession.ProjectName) ||
@@ -349,8 +376,6 @@ public sealed class GuiController
         if (!CanNavigateTo(screen)) return;
         CurrentSession.CurrentScreen = screen;
     }
-
-
 
     public bool HasStepProblem(ScreenEnum screen)
     {

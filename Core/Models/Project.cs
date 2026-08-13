@@ -8,8 +8,14 @@ public record Project
     public string Date { get; set; } = string.Empty;
     public string Revision { get; set; } = string.Empty;
 
+    public int WeightBasis { get; set; }
+    public double NominalWeightKg { get; set; }
+    public int WcfSelection { get; set; }
+    public double WCF { get; set; }
+
     public double WLL { get; set; }           // Total Working Load Limit
     public int NumberPoints { get; set; }     // Number of lifting points
+
 
     // Geometry of COG relative to lifting points
     public double A1 { get; set; }            // Distance from COG to 1st point (longitudinal)

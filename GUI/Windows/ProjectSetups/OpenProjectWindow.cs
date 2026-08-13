@@ -40,18 +40,22 @@ public static class OpenProjectWindow
             ImGui.Text("Available Projects");
             GuiCommon.Spacer();
 
-            foreach (string projectName in projects)
+            if (ImGui.BeginListBox("##Projects", new Vector2(350, 150)))
             {
-                bool selected = selectedProject == projectName;
-
-                if (ImGui.Selectable(
-                    projectName,
-                    selected,
-                    ImGuiSelectableFlags.None,
-                    new Vector2(350, 0)))
+                foreach (string projectName in projects)
                 {
-                    selectedProject = projectName;
+                    bool selected = selectedProject == projectName;
+
+                    if (ImGui.Selectable(projectName, selected))
+                    {
+                        selectedProject = projectName;
+                    }
+
+                    if (selected)
+                        ImGui.SetItemDefaultFocus();
                 }
+
+                ImGui.EndListBox();
             }
         }
 

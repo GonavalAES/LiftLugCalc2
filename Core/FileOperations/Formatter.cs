@@ -23,6 +23,9 @@ public static class Formatter
             sb.AppendLine();
 
             sb.AppendLine("[LOAD]");
+            sb.AppendLine($"WeightBasis={project.WeightBasis}");
+            sb.AppendLine($"NominalWeightKg={project.NominalWeightKg.ToString(CultureInfo.InvariantCulture)}");
+            sb.AppendLine($"WCFSelection={project.WcfSelection}");
             sb.AppendLine($"WLL={project.WLL}");
             sb.AppendLine($"NumberPoints={project.NumberPoints}");
             sb.AppendLine($"A1={project.A1}");
@@ -67,6 +70,15 @@ public static class Formatter
                         break;
                     case "Revision":
                         project.Revision = value;
+                        break;
+                    case "WeightBasis":
+                        project.WeightBasis = int.Parse(value);
+                        break;
+                    case "NominalWeightKg":
+                        project.NominalWeightKg = double.Parse(value, CultureInfo.InvariantCulture);
+                        break;
+                    case "WCFSelection":
+                        project.WcfSelection = int.Parse(value);
                         break;
                     case "WLL":
                         project.WLL = double.Parse(value, CultureInfo.InvariantCulture);
