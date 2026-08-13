@@ -3,14 +3,12 @@
 The application follows an **Engineering-First Architecture**: engineering calculations remain separate from the graphical interface, while the GUI provides a straightforward workflow for defining, calculating, reviewing, saving, loading, and reporting lifting-lug projects.
 
 ## Purpose
-
 The application performs lifting-lug calculations and checks based on the engineering requirements implemented in the original LiftLugCalc calculation engine, including checks associated with:
 - NORSOK R-002 Annex F
 - NORSOK R-002 Annex J
 - EN 13001
 
 ## Engineering Philosophy
-
 The application follows a few simple principles:
 - **Engineering first** — engineering calculations are kept independent of the GUI.
 - **Procedural calculation flow** — the calculation engine performs the engineering work; GUI classes do not contain engineering calculations.
@@ -19,8 +17,10 @@ The application follows a few simple principles:
 - **Clear engineering intent** — code should remain understandable to an engineer who is not primarily a software developer.
 - **No unnecessary UI complexity** — the application is a focused engineering tool rather than a general-purpose desktop framework.
 
-## Calculation Workflow
+## Installation
+Download folder "LiftLugCalc2 Installation Files", unpack it, and run file 'setup.exe'. (It installs automatically a deskptop shortcut also.)
 
+## Calculation Workflow
 The normal workflow is linear:
 ```text
 Project Setup
