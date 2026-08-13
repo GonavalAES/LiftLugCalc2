@@ -21,20 +21,12 @@ public static class OpenProjectWindow
 
     public static void Render(GuiController controller)
     {
-        if (!ImGui.BeginPopupModal(
-            "Open Project",
-            ImGuiWindowFlags.AlwaysAutoResize))
-        {
-            return;
-        }
+        if (!ImGui.BeginPopupModal("Open Project", ImGuiWindowFlags.AlwaysAutoResize)) return;
 
         GuiCommon.SectionHeader("Open Project");
         GuiCommon.Spacer();
 
-        if (projects.Count == 0)
-        {
-            ImGui.Text("No saved projects were found.");
-        }
+        if (projects.Count == 0) ImGui.Text("No saved projects were found.");
         else
         {
             ImGui.Text("Available Projects");
@@ -45,14 +37,8 @@ public static class OpenProjectWindow
                 foreach (string projectName in projects)
                 {
                     bool selected = selectedProject == projectName;
-
-                    if (ImGui.Selectable(projectName, selected))
-                    {
-                        selectedProject = projectName;
-                    }
-
-                    if (selected)
-                        ImGui.SetItemDefaultFocus();
+                    if (ImGui.Selectable(projectName, selected)) selectedProject = projectName;
+                    if (selected) ImGui.SetItemDefaultFocus();
                 }
 
                 ImGui.EndListBox();
@@ -63,24 +49,18 @@ public static class OpenProjectWindow
         ImGui.Separator();
         GuiCommon.Spacer();
 
-        if (GuiCommon.Button("CANCEL"))
-        {
-            ImGui.CloseCurrentPopup();
-        }
+        if (GuiCommon.Button("CANCEL")) ImGui.CloseCurrentPopup();
 
         ImGui.SameLine();
         GuiCommon.AlignRight();
 
-        bool openEnabled =
-            !string.IsNullOrWhiteSpace(selectedProject);
+        bool openEnabled = !string.IsNullOrWhiteSpace(selectedProject);
 
         if (GuiCommon.Button("OPEN", openEnabled))
         {
             string projectName = selectedProject!;
-
             ImGui.CloseCurrentPopup();
             selectedProject = null;
-
             controller.OpenProject(projectName);
         }
 

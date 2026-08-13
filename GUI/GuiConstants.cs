@@ -2,23 +2,14 @@
 
 public static class GuiConstants
 {
-    //------------------------------------------------------------
-    // Application layout
-    //------------------------------------------------------------
     public const float NavigationWidth = 220.0f;
     public const float StatusBarHeight = 30.0f;
     public const float CommandBarHeight = 120.0f;
     public const float Padding = 10.0f;
     public const float NumericInputWidth = 180.0f;
 
-    //------------------------------------------------------------
-    // Table defaults
-    //------------------------------------------------------------
     public const float TableHeight = 350.0f;
 
-    //------------------------------------------------------------
-    // Button defaults
-    //------------------------------------------------------------
     public const float ButtonWidth = 120.0f;
     public const float ButtonHeight = 32.0f;
 

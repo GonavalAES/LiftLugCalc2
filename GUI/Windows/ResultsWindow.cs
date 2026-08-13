@@ -33,7 +33,6 @@ public static class ResultsWindow
         GuiCommon.Spacer();
 
         if (project.SelectedMaterial != null) ImGui.Text($"Material : {project.SelectedMaterial.Designation}");
-
         if (project.SelectedLug != null)
         {
             ImGui.Text($"Lug : {LugPresentation.GetLugTypeName(project.SelectedLug.LugType)}");

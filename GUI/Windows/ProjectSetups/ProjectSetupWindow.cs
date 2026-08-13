@@ -11,60 +11,33 @@ public static class ProjectSetupWindow
         Session session = controller.CurrentSession;
 
         GuiCommon.SectionHeader("New Project");
-
         GuiCommon.Spacer();
 
         ImGui.Text("Project Name");
         ImGui.SameLine(GuiConstants.ProjectFieldLabelWidth);
 
         string projectName = session.ProjectName;
+        ImGui.SetNextItemWidth(GuiConstants.ProjectNameFieldWidth);
 
-        ImGui.SetNextItemWidth(
-            GuiConstants.ProjectNameFieldWidth);
-
-        if (ImGui.InputText(
-                "##ProjectName",
-                ref projectName,
-                100))
-        {
-            session.ProjectName = projectName;
-        }
+        if (ImGui.InputText("##ProjectName", ref projectName, 100)) session.ProjectName = projectName;
 
         ImGui.Text("Created By");
         ImGui.SameLine(GuiConstants.ProjectFieldLabelWidth);
 
         string createdBy = session.CreatedBy;
+        ImGui.SetNextItemWidth(GuiConstants.CreatedByFieldWidth);
 
-        ImGui.SetNextItemWidth(
-            GuiConstants.CreatedByFieldWidth);
-
-        if (ImGui.InputText(
-                "##CreatedBy",
-                ref createdBy,
-                100))
-        {
-            session.CreatedBy = createdBy;
-        }
+        if (ImGui.InputText("##CreatedBy", ref createdBy, 100)) session.CreatedBy = createdBy;
 
         ImGui.Text("Revision");
         ImGui.SameLine(GuiConstants.ProjectFieldLabelWidth);
 
         string revision = session.Revision;
+        ImGui.SetNextItemWidth(GuiConstants.RevisionFieldWidth);
 
-        ImGui.SetNextItemWidth(
-            GuiConstants.RevisionFieldWidth);
-
-        if (ImGui.InputText(
-                "##Revision",
-                ref revision,
-                30))
-        {
-            session.Revision = revision;
-        }
+        if (ImGui.InputText("##Revision", ref revision, 30)) session.Revision = revision;
 
         GuiCommon.Spacer();
-
-        ImGui.Text(
-            $"Date : {DateTime.Today.ToString(Constants.DATE_FORMAT)}");
+        ImGui.Text($"Date : {DateTime.Today.ToString(Constants.DATE_FORMAT)}");
     }
 }

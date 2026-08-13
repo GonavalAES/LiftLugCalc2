@@ -76,11 +76,7 @@ namespace LiftLugCalc2
             inputContext = window.CreateInput();
 
             // Initialize Native Silk.NET ImGui Controller
-            imGuiController = new ImGuiController(
-                gl,
-                window,
-                inputContext
-            );
+            imGuiController = new ImGuiController(gl, window, inputContext);
 
             // Load Engineering Reference CSVs
             AppState.Lugs = TableLugLoader.LoadFromCsv();
@@ -95,11 +91,7 @@ namespace LiftLugCalc2
             controller = new GuiController(currentSession);
         }
 
-        private static void OnUpdate(double delta)
-        {
-            // Update ImGui inputs per frame
-            imGuiController.Update((float)delta);
-        }
+        private static void OnUpdate(double delta) => imGuiController.Update((float)delta); // Update ImGui inputs per frame
 
         private static void OnRender(double delta)
         {
@@ -114,10 +106,7 @@ namespace LiftLugCalc2
             imGuiController.Render();
         }
 
-        private static void OnFramebufferResize(Silk.NET.Maths.Vector2D<int> newSize)
-        {
-            gl.Viewport(newSize);
-        }
+        private static void OnFramebufferResize(Silk.NET.Maths.Vector2D<int> newSize) => gl.Viewport(newSize);
 
         private static void OnClose()
         {

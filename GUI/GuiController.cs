@@ -17,10 +17,7 @@ public sealed class GuiController
     public Session CurrentSession { get; }
 
     // Constructor
-    public GuiController(Session session)
-    {
-        CurrentSession = session;
-    }
+    public GuiController(Session session) => CurrentSession = session;
 
     public ScreenEnum CurrentScreen
     {
@@ -29,10 +26,7 @@ public sealed class GuiController
     }
 
     // Render application
-    public void Render()
-    {
-        MainWindow.Render(this);
-    }
+    public void Render() => MainWindow.Render(this);
 
     public void RenderCurrentPage()
     {
