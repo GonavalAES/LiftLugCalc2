@@ -41,7 +41,7 @@ public static class ResultsWindow
         }
 
         GuiCommon.Spacer();
-        ImGui.Text($"Applied Load : {result.AppliedLoad:N1} kg");
+        ImGui.Text($"Applied Load : {result.AppliedLoad:N1} kN");
         GuiCommon.Spacer();
         ImGui.Separator();
         GuiCommon.Spacer();
