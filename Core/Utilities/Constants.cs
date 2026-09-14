@@ -54,5 +54,29 @@
 
         // ========== LIFT POINT SYMMETRY TOLERANCE ==========
         public const double LIFT_POINT_SYMMETRY_TOLERANCE = 0.05; // Tolerance for lift point symmetry checks (m)
+
+        // ========== EXPLORATORY CALCULATION INPUT LIMITS ==========
+        public const double EXPLORATORY_MIN_PLATE_THICKNESS = 3.0;
+        public const double EXPLORATORY_MAX_PLATE_THICKNESS = 150.0;
+        public const double EXPLORATORY_MIN_HOLE_DIAMETER = 6.0;
+        public const double EXPLORATORY_MAX_HOLE_DIAMETER = 250.0;
+        public const double EXPLORATORY_MIN_LUG_RADIUS = 10.0;
+        public const double EXPLORATORY_MAX_LUG_RADIUS = 500.0;
+        public const double EXPLORATORY_MIN_HOLE_CENTRE_HEIGHT = 10.0;
+        public const double EXPLORATORY_MAX_HOLE_CENTRE_HEIGHT = 750.0;
+        public const double EXPLORATORY_MIN_LUG_LENGTH = 30.0;
+        public const double EXPLORATORY_MAX_LUG_LENGTH = 1000.0;
+        public const double EXPLORATORY_MIN_TOE_HEIGHT = 3.0;
+        public const double EXPLORATORY_MAX_TOE_HEIGHT = 200.0;
+        public const double EXPLORATORY_MIN_CHEEK_BOSS_RADIUS = 10.0;
+        public const double EXPLORATORY_MAX_CHEEK_BOSS_RADIUS = 500.0;
+        public const double EXPLORATORY_MIN_CHEEK_BOSS_THICKNESS = 3.0;
+        public const double EXPLORATORY_MAX_CHEEK_BOSS_THICKNESS = 150.0;
+        public const double EXPLORATORY_MIN_WELD_THROAT = 3.0;
+        public const double EXPLORATORY_MAX_WELD_THROAT = 50.0;
+        public const double EXPLORATORY_MIN_EDGE_DISTANCE_FACTOR = 0.80;
+        public const double EXPLORATORY_RECOMMENDED_EDGE_DISTANCE_FACTOR = 1.00;
+        public const double EXPLORATORY_MAX_WELD_TO_PLATE_RATIO = 0.70;
+        public const double EXPLORATORY_MAX_WELD_TO_CHEEK_RATIO = 0.70;
     }
 }

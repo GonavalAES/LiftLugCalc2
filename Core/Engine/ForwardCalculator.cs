@@ -13,8 +13,21 @@ public static class ForwardCalculator
         var material = input.Material;
         var results = new CalculationResult { };
 
-        if (choice == "1") results.CalculationType = "Forward Calculation";
-        if (choice == "2") results.CalculationType = "Reverse Calculation";
+        int choiceInt = int.Parse(choice);
+        switch (choiceInt)
+        {
+            case 1:
+                results.CalculationType = "Forward Calculation";
+                break;
+            case 2:
+                results.CalculationType = "Reverse Calculation";
+                break;
+            case 3:
+                results.CalculationType = "Exploratory Calculation";
+                break;
+            default:
+                throw new ArgumentException("Invalid choice. Must be '1' or '2'.");
+        }
 
         // 1. Calculate PLP (Point Load with factors)
         double plp = PreliminaryCalculations.CalculatePLP(project);

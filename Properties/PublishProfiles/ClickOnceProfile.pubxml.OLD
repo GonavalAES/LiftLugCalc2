@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- https://go.microsoft.com/fwlink/?LinkID=208121. -->
+<Project>
+  <PropertyGroup>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.*</ApplicationVersion>
+    <BootstrapperEnabled>True</BootstrapperEnabled>
+    <Configuration>Release</Configuration>
+    <CreateWebPageOnPublish>False</CreateWebPageOnPublish>
+    <GenerateManifests>true</GenerateManifests>
+    <Install>True</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <IsRevisionIncremented>True</IsRevisionIncremented>
+    <IsWebBootstrapper>False</IsWebBootstrapper>
+    <ManifestCertificateThumbprint>1EF97FCFB6A3DA30C54142F8DD283904D093E7DD</ManifestCertificateThumbprint>
+    <MapFileExtensions>True</MapFileExtensions>
+    <OpenBrowserOnPublish>False</OpenBrowserOnPublish>
+    <Platform>Any CPU</Platform>
+    <ProductName>LiftLugCalc</ProductName>
+    <PublishDir>bin\Release\net10.0-windows7.0\win-x64\app.publish\</PublishDir>
+    <PublishUrl>bin\publish\</PublishUrl>
+    <PublisherName>GoFish Engineering Software</PublisherName>
+    <PublishProtocol>ClickOnce</PublishProtocol>
+    <PublishReadyToRun>False</PublishReadyToRun>
+    <PublishSingleFile>False</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>True</SelfContained>
+    <SignatureAlgorithm>sha256RSA</SignatureAlgorithm>
+    <SignManifests>True</SignManifests>
+    <SkipPublishVerification>false</SkipPublishVerification>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
+    <UpdateEnabled>False</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateRequired>False</UpdateRequired>
+    <WebPageFileName>Publish.html</WebPageFileName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PublishFile Include="LiftLugCalc2_Icon.ico">
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>true</IncludeHash>
+      <FileType>File</FileType>
+    </PublishFile>
+  </ItemGroup>
+</Project>

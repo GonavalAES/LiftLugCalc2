@@ -23,8 +23,9 @@ public record Project
     public double B1 { get; set; }            // Distance transverse 1
     public double B2 { get; set; }            // Distance transverse 2
 
-    public TableLug? SelectedLug { get; set; }
+    public TableLug? SelectedLug { get; set; }        // table lug (Forward/Reverse)
     public Material? SelectedMaterial { get; set; }
+    public CustomLug? CustomLug { get; set; }         // user-defined lug 
 
     public int? UserLugID { get; set; }
     public int? UserMaterialID { get; set; }
