@@ -35,39 +35,33 @@ public sealed class GuiController
             case ScreenEnum.MainMenu:
                 MenuWindow.Render(this);
                 break;
-
             case ScreenEnum.NewProject:
                 ProjectSetupWindow.Render(this);
                 break;
-
             case ScreenEnum.WeightDefinition:
                 WeightDefinitionWindow.Render(this);
                 break;
-
             case ScreenEnum.LiftGeometry:
                 LiftGeometryWindow.Render(this);
                 break;
-
             case ScreenEnum.CalculationMode:
                 CalculationModeWindow.Render(this);
                 break;
-
             case ScreenEnum.MaterialSelection:
                 MaterialSelectionWindow.Render(this);
                 break;
-
             case ScreenEnum.LugGeometry:
                 LugSelectionWindow.Render(this);
                 break;
-
             case ScreenEnum.ForwardCalculation:
                 ForwardCalculationWindow.Render(this);
                 break;
-
             case ScreenEnum.ReverseCalculation:
                 ReverseCalculationWindow.Render(this);
                 break;
-
+            case ScreenEnum.ExploratoryCalculation:
+                ExploratoryCalculationWindow.Render(this);
+                break;
             case ScreenEnum.Results:
                 ResultsWindow.Render(this);
                 break;
@@ -111,6 +105,8 @@ public sealed class GuiController
         CurrentSession.CalculationMode = CalculationMode.None;
         CurrentSession.SelectedMaterial = null;
         CurrentSession.SelectedLug = null;
+        CurrentSession.ExploratoryReferenceLug = null;
+        CurrentSession.ExploratoryLugEditor.Reset();
 
         CurrentSession.CurrentResult = null;
 
@@ -273,8 +269,21 @@ public sealed class GuiController
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = "Material selected. Choose calculation mode";
 
-        if (CurrentSession.CalculationMode == CalculationMode.Forward) CurrentScreen = ScreenEnum.LugGeometry;
-        else CurrentScreen = ScreenEnum.ReverseCalculation;
+        switch (CurrentSession.CalculationMode)
+        {
+            case CalculationMode.Forward:
+                CurrentScreen = ScreenEnum.LugGeometry;
+                break;
+            case CalculationMode.Reverse:
+                CurrentScreen = ScreenEnum.ReverseCalculation;
+                break;
+            case CalculationMode.Exploratory:
+                CurrentScreen = ScreenEnum.ExploratoryCalculation;
+                break;
+            default:
+                CurrentScreen = ScreenEnum.CalculationMode;
+                break;
+        }
     }
 
     public void AcceptLugSelection()
@@ -285,6 +294,17 @@ public sealed class GuiController
         CurrentSession.StatusMessage = "Lug selected. Running forward calculation.";
 
         CurrentScreen = ScreenEnum.ForwardCalculation;
+    }
+
+    public void SelectExploratoryReferenceLug(TableLug lug)
+    {
+        CurrentSession.ExploratoryReferenceLug = lug;
+        CurrentSession.ExploratoryLugEditor.LoadFromReferenceLug(lug);
+
+        CurrentSession.CurrentResult = null;
+
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage = $"Reference lug selected: ID {lug.LugID}, Type {lug.LugType}.";
     }
 
     public void RunForwardCalculation()
@@ -406,6 +426,7 @@ public sealed class GuiController
             ScreenEnum.LugGeometry => CurrentSession.CalculationMode == CalculationMode.Forward && hasMaterial,
             ScreenEnum.ForwardCalculation => CurrentSession.CalculationMode == CalculationMode.Forward && hasLug,
             ScreenEnum.ReverseCalculation => CurrentSession.CalculationMode == CalculationMode.Reverse && hasMaterial,
+            ScreenEnum.ExploratoryCalculation => CurrentSession.CalculationMode == CalculationMode.Exploratory && hasMaterial,
             ScreenEnum.Results => CurrentSession.CurrentResult is not null,
             _ => false
         };

@@ -12,5 +12,6 @@ public enum ScreenEnum
     LugGeometry,
     ForwardCalculation,
     ReverseCalculation,
+    ExploratoryCalculation,
     Results
 }

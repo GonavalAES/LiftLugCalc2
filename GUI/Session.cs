@@ -1,5 +1,6 @@
 ﻿using LiftLugCalc2.Core.Models;
 using LiftLugCalc2.GUI.Enums;
+using LiftLugCalc2.GUI.Helpers;
 
 namespace LiftLugCalc2.GUI;
 
@@ -13,6 +14,8 @@ public sealed class Session
     public Project? CurrentProject { get; set; }
     public Material? SelectedMaterial { get; set; }
     public TableLug? SelectedLug { get; set; }
+    public TableLug? ExploratoryReferenceLug { get; set; }
+    public ExploratoryLugEditor ExploratoryLugEditor { get; } = new();
     public CalculationResult? CurrentResult { get; set; }
     public string StatusMessage { get; set; } = string.Empty;
     public StatusType StatusType { get; set; } = StatusType.Information;

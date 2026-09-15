@@ -4,5 +4,6 @@ public enum CalculationMode
 {
     Forward,
     Reverse,
+    Exploratory,
     None
 }

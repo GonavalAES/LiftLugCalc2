@@ -10,7 +10,8 @@ public static class CalculationModeHelper
         {
             CalculationMode.Forward => "1",
             CalculationMode.Reverse => "2",
-            _ => throw new InvalidOperationException()
+            CalculationMode.Exploratory => "3",
+            _ => throw new InvalidOperationException("A calculation mode must be selected.")
         };
     }
 }

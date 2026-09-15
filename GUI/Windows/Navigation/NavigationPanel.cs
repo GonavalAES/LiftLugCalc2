@@ -16,14 +16,17 @@ public static class NavigationPanel
         DrawStep(controller, "Calculation Mode", ScreenEnum.CalculationMode);
         DrawStep(controller, "Material", ScreenEnum.MaterialSelection);
 
-        if (controller.CurrentSession.CalculationMode == CalculationMode.Forward)
-            DrawStep(controller, "Lug", ScreenEnum.LugGeometry);
-        if (controller.CurrentSession.CalculationMode == CalculationMode.Forward && controller.CurrentSession.SelectedLug is not null)
-            DrawStep(controller, "Run", ScreenEnum.ForwardCalculation);
-        else if (controller.CurrentSession.CalculationMode == CalculationMode.Reverse && controller.CurrentSession.SelectedMaterial is not null)
-            DrawStep(controller, "Run", ScreenEnum.ReverseCalculation);
-
-        DrawStep(controller, "Results", ScreenEnum.Results);
+        if (controller.CurrentSession.CalculationMode == CalculationMode.Forward) DrawStep(controller, "Lug", ScreenEnum.LugGeometry);
+        if (controller.CurrentSession.CalculationMode == CalculationMode.Forward &&
+            controller.CurrentSession.SelectedLug is not null) DrawStep(controller, "Run", ScreenEnum.ForwardCalculation);
+        else if (controller.CurrentSession.CalculationMode == CalculationMode.Reverse &&
+                 controller.CurrentSession.SelectedMaterial is not null) DrawStep(controller, "Run", ScreenEnum.ReverseCalculation);
+        else if (controller.CurrentSession.CalculationMode == CalculationMode.Exploratory &&
+                 controller.CurrentSession.SelectedMaterial is not null)
+        {
+            DrawStep(controller, "Explore", ScreenEnum.ExploratoryCalculation);
+            DrawStep(controller, "Results", ScreenEnum.Results);
+        }
     }
 
     private static void DrawStep(GuiController controller, string label, ScreenEnum screen)
