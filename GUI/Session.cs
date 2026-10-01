@@ -16,6 +16,7 @@ public sealed class Session
     public TableLug? SelectedLug { get; set; }
     public TableLug? ExploratoryReferenceLug { get; set; }
     public ExploratoryLugEditor ExploratoryLugEditor { get; } = new();
+    public ExploratoryValidationResult? ExploratoryValidationResult { get; set; }
     public CalculationResult? CurrentResult { get; set; }
     public string StatusMessage { get; set; } = string.Empty;
     public StatusType StatusType { get; set; } = StatusType.Information;

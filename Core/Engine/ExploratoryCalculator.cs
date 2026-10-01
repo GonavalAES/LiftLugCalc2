@@ -4,27 +4,17 @@ namespace LiftLugCalc2.Core.Engine;
 
 public static class ExploratoryCalculator
 {
-    public static CalculationResult Run(
-        ExploratoryInput input,
-        string choice)
+    public static CalculationResult Run(ExploratoryInput input, string choice)
     {
-        TableLug calculationLug =
-            ConvertToCalculationLug(input.Lug);
-
-        ForwardInput forwardInput = new(
-            input.Project,
-            calculationLug,
-            input.Material);
-
-        return ForwardCalculator.Run(
-            forwardInput,
-            choice);
+        TableLug calculationLug = ConvertToCalculationLug(input.Lug);
+        ForwardInput forwardInput = new(input.Project, calculationLug, input.Material);
+        return ForwardCalculator.Run(forwardInput, choice);
     }
 
-    private static TableLug ConvertToCalculationLug(
-        CustomLug lug)
+    private static TableLug ConvertToCalculationLug(CustomLug lug)
     {
-        return new TableLug(
+        return new TableLug
+        (
             LugID: -1,
             LugType: lug.LugType,
             LugWLL: lug.LugWLL,
@@ -38,6 +28,7 @@ public static class ExploratoryCalculator
             ThicknessCheek_Boss: lug.ThicknessCheekBoss,
             WeldThroatCheek: lug.WeldThroatCheek,
             LugWeldThroat: lug.LugWeldThroat,
-            Bracket: lug.Bracket);
+            Bracket: lug.Bracket
+        );
     }
 }

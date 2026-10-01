@@ -70,6 +70,16 @@ public static class GuiCommon
         return changed;
     }
 
+    public static bool InputDouble(string label, ref double value, bool enabled)
+    {
+        ImGui.PushItemWidth(GuiConstants.NumericInputWidth);
+        ImGui.BeginDisabled(!enabled);
+        bool changed = ImGui.InputDouble(label, ref value, 0.0, 0.0, "%.2f");
+        ImGui.EndDisabled();
+        ImGui.PopItemWidth();
+        return changed;
+    }
+
     public static void AlignRight()
     {
         float buttonWidth = GuiConstants.ButtonWidth;
@@ -100,5 +110,13 @@ public static class GuiCommon
         else if (safetyFactor < GuiConstants.RESULT_FS_YELLOW_LIMIT) colour = new Vector4(1.00f, 0.80f, 0.20f, 1.0f);
         else colour = new Vector4(0.30f, 0.85f, 0.30f, 1.0f);
         ImGui.TextColored(colour, "o");
+    }
+
+    public static bool Button(string text, float width, float height, bool enabled = true)
+    {
+        ImGui.BeginDisabled(!enabled);
+        bool clicked = ImGui.Button(text, new Vector2(width, height));
+        ImGui.EndDisabled();
+        return clicked;
     }
 }

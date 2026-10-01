@@ -3,6 +3,7 @@ using LiftLugCalc2.Core.FileOperations;
 using LiftLugCalc2.Core.Models;
 using LiftLugCalc2.Core.Utilities;
 using LiftLugCalc2.GUI.Enums;
+using LiftLugCalc2.GUI.Helpers;
 using LiftLugCalc2.GUI.Windows;
 using LiftLugCalc2.GUI.Windows.Calculations;
 using LiftLugCalc2.GUI.Windows.Navigation;
@@ -107,6 +108,7 @@ public sealed class GuiController
         CurrentSession.SelectedLug = null;
         CurrentSession.ExploratoryReferenceLug = null;
         CurrentSession.ExploratoryLugEditor.Reset();
+        CurrentSession.ExploratoryValidationResult = null;
 
         CurrentSession.CurrentResult = null;
 
@@ -301,11 +303,112 @@ public sealed class GuiController
         CurrentSession.ExploratoryReferenceLug = lug;
         CurrentSession.ExploratoryLugEditor.LoadFromReferenceLug(lug);
 
+        CurrentSession.ExploratoryValidationResult = null;
         CurrentSession.CurrentResult = null;
 
         CurrentSession.StatusType = StatusType.Information;
         CurrentSession.StatusMessage = $"Reference lug selected: ID {lug.LugID}, Type {lug.LugType}.";
     }
+
+    public void ValidateExploratoryLug()
+    {
+        if (CurrentSession.ExploratoryReferenceLug is null)
+        {
+            CurrentSession.ExploratoryValidationResult = null;
+            CurrentSession.StatusType = StatusType.Warning;
+            CurrentSession.StatusMessage = "Select a reference lug before validation.";
+            return;
+        }
+
+        CustomLug customLug = CurrentSession.ExploratoryLugEditor.ToCustomLug();
+
+        ExploratoryValidationResult validationResult = ExploratoryLugValidator.Validate(customLug);
+
+        CurrentSession.ExploratoryValidationResult = validationResult;
+
+        if (validationResult.IsValid)
+        {
+            CurrentSession.StatusType = StatusType.Information;
+            CurrentSession.StatusMessage = "Custom lug geometry is valid for calculation.";
+        }
+        else
+        {
+            CurrentSession.StatusType = StatusType.Error;
+            CurrentSession.StatusMessage = "Custom lug geometry contains validation errors.";
+        }
+    }
+
+    public void ResetExploratoryLug()
+    {
+        if (CurrentSession.ExploratoryReferenceLug is null)
+        {
+            CurrentSession.StatusType = StatusType.Warning;
+            CurrentSession.StatusMessage = "Select a reference lug first.";
+            return;
+        }
+
+        CurrentSession.ExploratoryLugEditor.LoadFromReferenceLug(CurrentSession.ExploratoryReferenceLug);
+        CurrentSession.ExploratoryValidationResult = null;
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage = "Custom lug values reset to the reference lug.";
+    }
+
+    public void RunExploratoryCalculation()
+    {
+        if (CurrentSession.CurrentProject is null)
+        {
+            CurrentSession.StatusType = StatusType.Error;
+            CurrentSession.StatusMessage = "No active project is available.";
+            return;
+        }
+
+        if (CurrentSession.SelectedMaterial is null)
+        {
+            CurrentSession.StatusType = StatusType.Error;
+            CurrentSession.StatusMessage = "Select a material before running the calculation.";
+            return;
+        }
+
+        if (CurrentSession.ExploratoryReferenceLug is null)
+        {
+            CurrentSession.StatusType = StatusType.Error;
+            CurrentSession.StatusMessage = "Select a reference lug before running the calculation.";
+            return;
+        }
+
+        ExploratoryValidationResult? validationResult = CurrentSession.ExploratoryValidationResult;
+
+        if (validationResult is null)
+        {
+            CurrentSession.StatusType = StatusType.Warning;
+            CurrentSession.StatusMessage = "Validate the custom lug geometry before running the calculation.";
+            return;
+        }
+
+        if (!validationResult.IsValid)
+        {
+            CurrentSession.StatusType = StatusType.Error;
+            CurrentSession.StatusMessage = "Correct geometry validation errors before running the calculation.";
+            return;
+        }
+
+        Project project = CurrentSession.CurrentProject;
+        Material material = CurrentSession.SelectedMaterial;
+        CustomLug customLug = CurrentSession.ExploratoryLugEditor.ToCustomLug();
+
+        ExploratoryInput input = new(project, customLug, material);
+
+        CalculationResult result = ExploratoryCalculator.Run(input, "3");
+
+        CurrentSession.CurrentResult = result;
+        CurrentSession.StatusType = result.Pass ? StatusType.Information : StatusType.Warning;
+        CurrentSession.StatusMessage = result.Pass ? "Exploratory calculation completed: PASS."
+                                                   : "Exploratory calculation completed: FAIL.";
+
+        CurrentScreen = ScreenEnum.Results;
+    }
+
+    public void ClearExploratoryValidation() => CurrentSession.ExploratoryValidationResult = null;
 
     public void RunForwardCalculation()
     {

@@ -108,4 +108,24 @@ public sealed class ExploratoryLugEditor
         ChangeWeldThroatCheek = false;
         ChangeLugWeldThroat = false;
     }
+
+    public CustomLug ToCustomLug()
+    {
+        return new CustomLug
+        (
+            LugType: LugType,
+            LugWLL: LugWLL,
+            ThicknessPlate: ThicknessPlate,
+            DiameterHole: DiameterHole,
+            RadiusLug: RadiusLug,
+            HeightCenterHole: HeightCenterHole,
+            LengthLug: LengthLug,
+            HeightToe: HeightToe,
+            RadiusCheekBoss: RadiusCheekBoss,
+            ThicknessCheekBoss: ThicknessCheekBoss,
+            WeldThroatCheek: WeldThroatCheek,
+            LugWeldThroat: LugWeldThroat,
+            Bracket: Bracket
+        );
+    }
 }

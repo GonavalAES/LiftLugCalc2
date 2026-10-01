@@ -33,11 +33,12 @@ public static class ResultsWindow
         GuiCommon.Spacer();
 
         if (project.SelectedMaterial != null) ImGui.Text($"Material : {project.SelectedMaterial.Designation}");
-        if (project.SelectedLug != null)
+        if (result.CalculationType == "Exploratory Calculation") DrawExploratoryLugSummary(session);
+        else if (project.SelectedLug is not null)
         {
-            ImGui.Text($"Lug : {LugPresentation.GetLugTypeName(project.SelectedLug.LugType)}");
-            ImGui.Text($"Lug ID : {project.SelectedLug.LugID}");
-            ImGui.Text($"Lug WLL : {project.SelectedLug.LugWLL:N0} kg");
+            ImGui.Text($"Lug: {LugPresentation.GetLugTypeName(project.SelectedLug.LugType)}");
+            ImGui.Text($"Lug ID: {project.SelectedLug.LugID}");
+            ImGui.Text($"Lug WLL: {project.SelectedLug.LugWLL:N0} kg");
         }
 
         GuiCommon.Spacer();
@@ -153,5 +154,16 @@ public static class ResultsWindow
         GuiCommon.Spacer();
 
         GuiCommon.ResultMessage(result.Pass);
+    }
+
+    private static void DrawExploratoryLugSummary(Session session)
+    {
+        TableLug? referenceLug = session.ExploratoryReferenceLug;
+        ExploratoryLugEditor editor = session.ExploratoryLugEditor;
+
+        ImGui.Text("Lug: User-defined exploratory lug");
+        ImGui.Text($"Lug type: {LugPresentation.GetLugTypeName(editor.LugType)}");
+
+        if (referenceLug is not null) ImGui.Text($"Reference lug: ID {referenceLug.LugID}");
     }
 }

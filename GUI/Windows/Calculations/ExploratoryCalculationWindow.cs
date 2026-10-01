@@ -29,7 +29,7 @@ public static class ExploratoryCalculationWindow
         ImGui.Separator();
         GuiCommon.Spacer();
 
-        DrawReferenceLugGeometry(session);
+        DrawExploratoryGeometryEditor(session, controller);
     }
 
     private static void DrawProjectSummary(Session session)
@@ -85,45 +85,222 @@ public static class ExploratoryCalculationWindow
         return $"ID {lug.LugID} - {lugType} - {lug.LugWLL:N0} kg";
     }
 
-    private static void DrawReferenceLugGeometry(Session session)
+    private static void DrawExploratoryGeometryEditor(Session session, GuiController controller)
     {
         if (session.ExploratoryReferenceLug is null)
         {
-            GuiCommon.SectionHeader("Reference Geometry");
-            ImGui.TextWrapped("Select a reference lug to display its geometry.");
+            GuiCommon.SectionHeader("Custom Lug Geometry");
+            ImGui.TextWrapped("Select a reference lug to begin editing the custom lug geometry.");
             return;
         }
 
+        TableLug referenceLug = session.ExploratoryReferenceLug;
+
         ExploratoryLugEditor editor = session.ExploratoryLugEditor;
 
-        GuiCommon.SectionHeader("Reference Geometry");
-
-        GuiCommon.LabelValue("Lug type", LugPresentation.GetLugTypeName(editor.LugType));
-        GuiCommon.LabelValue("Catalogue WLL", editor.LugWLL, "kg");
+        GuiCommon.SectionHeader("Custom Lug Geometry");
+        ImGui.TextWrapped("Select one or more properties to modify. Unticked properties remain equal to the selected reference lug.");
 
         GuiCommon.Spacer();
+        DrawLugIdentification(referenceLug, editor);
 
-        GuiCommon.LabelValue("Plate thickness", editor.ThicknessPlate, "mm");
-        GuiCommon.LabelValue("Hole diameter", editor.DiameterHole, "mm");
-        GuiCommon.LabelValue("Lug radius", editor.RadiusLug, "mm");
-        GuiCommon.LabelValue("Hole centre height", editor.HeightCenterHole, "mm");
-        GuiCommon.LabelValue("Lug length", editor.LengthLug, "mm");
-        GuiCommon.LabelValue("Toe height", editor.HeightToe, "mm");
+        GuiCommon.Spacer();
+        DrawMainGeometryTable(controller, referenceLug, editor);
 
         if (editor.LugType is 2 or 3)
         {
             GuiCommon.Spacer();
-
-            GuiCommon.LabelValue("Cheek/boss radius", editor.RadiusCheekBoss, "mm");
-            GuiCommon.LabelValue("Cheek/boss thickness", editor.ThicknessCheekBoss, "mm");
-            GuiCommon.LabelValue("Cheek/boss weld throat", editor.WeldThroatCheek, "mm");
+            DrawCheekBossGeometryTable(controller, referenceLug, editor);
         }
 
         if (editor.LugType is 1 or 2 or 3)
         {
             GuiCommon.Spacer();
-
-            GuiCommon.LabelValue("Main weld throat", editor.LugWeldThroat, "mm");
+            DrawWeldGeometryTable(controller, referenceLug, editor);
         }
+
+        GuiCommon.Spacer();
+
+        DrawValidationResult(session);
     }
+
+    private static void DrawValidationResult(Session session)
+    {
+        ExploratoryValidationResult? result = session.ExploratoryValidationResult;
+
+        if (result is null) return;
+
+        GuiCommon.SectionHeader("Geometry Validation");
+
+        if (result.IsValid) GuiCommon.StatusMessage(StatusType.Information, "Geometry is valid for calculation.");
+        else GuiCommon.StatusMessage(StatusType.Error, "Geometry contains errors. Correct them before calculation.");
+
+        foreach (string error in result.Errors) GuiCommon.StatusMessage(StatusType.Error, error);
+        foreach (string warning in result.Warnings) GuiCommon.StatusMessage(StatusType.Warning, warning);
+    }
+
+    private static void DrawLugIdentification(TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        GuiCommon.SectionHeader("Reference");
+        GuiCommon.LabelValue("Reference lug", $"ID {referenceLug.LugID}");
+        GuiCommon.LabelValue("Lug type", LugPresentation.GetLugTypeName(editor.LugType));
+        GuiCommon.LabelValue("Reference WLL", referenceLug.LugWLL, "kg");
+    }
+
+    private static void DrawMainGeometryTable(GuiController controller, TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        GuiCommon.SectionHeader("Main Lug Geometry");
+
+        if (!ImGui.BeginTable("MainLugGeometryTable", 4, ImGuiTableFlags.Borders |
+                              ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit))
+            return;
+
+        ImGui.TableSetupColumn("Modify");
+        ImGui.TableSetupColumn("Property");
+        ImGui.TableSetupColumn("Reference");
+        ImGui.TableSetupColumn("Custom value");
+        ImGui.TableHeadersRow();
+
+        bool hasChanged = false;
+
+        hasChanged |= DrawEditableDoubleRow("PlateThickness", "Plate thickness [mm]", referenceLug.ThicknessPlate, editor.ChangeThicknessPlate,
+                              editor.ThicknessPlate, out bool changeThicknessPlate, out double thicknessPlate);
+
+        editor.ChangeThicknessPlate = changeThicknessPlate;
+        editor.ThicknessPlate = thicknessPlate;
+
+        hasChanged |= DrawEditableDoubleRow("HoleDiameter", "Hole diameter [mm]", referenceLug.DiameterHole, editor.ChangeDiameterHole,
+                              editor.DiameterHole, out bool changeDiameterHole, out double diameterHole);
+
+        editor.ChangeDiameterHole = changeDiameterHole;
+        editor.DiameterHole = diameterHole;
+
+        hasChanged |= DrawEditableDoubleRow("LugRadius", "Lug radius [mm]", referenceLug.RadiusLug, editor.ChangeRadiusLug,
+                              editor.RadiusLug, out bool changeRadiusLug, out double radiusLug);
+
+        editor.ChangeRadiusLug = changeRadiusLug;
+        editor.RadiusLug = radiusLug;
+
+        hasChanged |= DrawEditableDoubleRow("HoleCentreHeight", "Hole centre height [mm]", referenceLug.HeightCenterHole,
+                              editor.ChangeHeightCenterHole, editor.HeightCenterHole, out bool changeHeightCenterHole,
+                              out double heightCenterHole);
+
+        editor.ChangeHeightCenterHole = changeHeightCenterHole;
+        editor.HeightCenterHole = heightCenterHole;
+
+        hasChanged |= DrawEditableDoubleRow("LugLength", "Lug length [mm]", referenceLug.LengthLug, editor.ChangeLengthLug,
+                              editor.LengthLug, out bool changeLengthLug, out double lengthLug);
+
+        editor.ChangeLengthLug = changeLengthLug;
+        editor.LengthLug = lengthLug;
+
+        hasChanged |= DrawEditableDoubleRow("ToeHeight", "Toe height [mm]", referenceLug.HeightToe, editor.ChangeHeightToe,
+                              editor.HeightToe, out bool changeHeightToe, out double heightToe);
+
+        editor.ChangeHeightToe = changeHeightToe;
+        editor.HeightToe = heightToe;
+
+        if (hasChanged) controller.ClearExploratoryValidation();
+
+        ImGui.EndTable();
+    }
+
+    private static void DrawCheekBossGeometryTable(GuiController controller, TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        GuiCommon.SectionHeader("Cheek / Boss Geometry");
+
+        if (!ImGui.BeginTable("CheekBossGeometryTable", 4, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
+                              ImGuiTableFlags.SizingFixedFit))
+            return;
+
+        ImGui.TableSetupColumn("Modify");
+        ImGui.TableSetupColumn("Property");
+        ImGui.TableSetupColumn("Reference");
+        ImGui.TableSetupColumn("Custom value");
+        ImGui.TableHeadersRow();
+
+        bool hasChanged = false;
+
+        string radiusName = editor.LugType == 2 ? "Cheek radius [mm]" : "Boss radius [mm]";
+        string thicknessName = editor.LugType == 2 ? "Cheek thickness [mm]" : "Boss thickness [mm]";
+
+        hasChanged |= DrawEditableDoubleRow("CheekBossRadius", radiusName, referenceLug.RadiusCheek_Boss, editor.ChangeRadiusCheekBoss,
+                              editor.RadiusCheekBoss, out bool changeRadiusCheekBoss, out double radiusCheekBoss);
+
+        editor.ChangeRadiusCheekBoss = changeRadiusCheekBoss;
+        editor.RadiusCheekBoss = radiusCheekBoss;
+
+        hasChanged |= DrawEditableDoubleRow("CheekBossThickness", thicknessName, referenceLug.ThicknessCheek_Boss,
+                              editor.ChangeThicknessCheekBoss, editor.ThicknessCheekBoss, out bool changeThicknessCheekBoss,
+                              out double thicknessCheekBoss);
+
+        editor.ChangeThicknessCheekBoss = changeThicknessCheekBoss;
+        editor.ThicknessCheekBoss = thicknessCheekBoss;
+
+        if (hasChanged) controller.ClearExploratoryValidation();
+
+        ImGui.EndTable();
+    }
+
+    private static void DrawWeldGeometryTable(GuiController controller, TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        GuiCommon.SectionHeader("Weld Geometry");
+
+        if (!ImGui.BeginTable("WeldGeometryTable", 4, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
+                              ImGuiTableFlags.SizingFixedFit))
+            return;
+
+        ImGui.TableSetupColumn("Modify");
+        ImGui.TableSetupColumn("Property");
+        ImGui.TableSetupColumn("Reference");
+        ImGui.TableSetupColumn("Custom value");
+        ImGui.TableHeadersRow();
+
+        bool hasChanged = false;
+
+        hasChanged |= DrawEditableDoubleRow("MainWeldThroat", "Main weld throat [mm]", referenceLug.LugWeldThroat, editor.ChangeLugWeldThroat,
+                              editor.LugWeldThroat, out bool changeLugWeldThroat, out double lugWeldThroat);
+
+        editor.ChangeLugWeldThroat = changeLugWeldThroat;
+        editor.LugWeldThroat = lugWeldThroat;
+
+        if (editor.LugType is 2 or 3)
+        {
+            string weldName = editor.LugType == 2 ? "Cheek weld throat [mm]" : "Boss weld throat [mm]";
+
+            hasChanged |= DrawEditableDoubleRow("CheekBossWeldThroat", weldName, referenceLug.WeldThroatCheek, editor.ChangeWeldThroatCheek,
+                                  editor.WeldThroatCheek, out bool changeWeldThroatCheek, out double weldThroatCheek);
+
+            editor.ChangeWeldThroatCheek = changeWeldThroatCheek;
+            editor.WeldThroatCheek = weldThroatCheek;
+        }
+
+        if (hasChanged) controller.ClearExploratoryValidation();
+
+        ImGui.EndTable();
+    }
+
+    private static bool DrawEditableDoubleRow(string id, string propertyName, double referenceValue, bool changeSelected,
+                                              double customValue, out bool updatedChangeSelected, out double updatedCustomValue)
+    {
+        updatedChangeSelected = changeSelected;
+        updatedCustomValue = customValue;
+
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+
+        bool checkboxChanged = ImGui.Checkbox($"##Change{id}", ref updatedChangeSelected);
+
+        ImGui.TableSetColumnIndex(1);
+        ImGui.Text(propertyName);
+        ImGui.TableSetColumnIndex(2);
+        ImGui.Text($"{referenceValue:F2}");
+        ImGui.TableSetColumnIndex(3);
+
+        bool valueChanged = GuiCommon.InputDouble($"##Custom{id}", ref updatedCustomValue, updatedChangeSelected);
+
+        return checkboxChanged || valueChanged;
+    }
+
+
 }

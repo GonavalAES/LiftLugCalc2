@@ -74,8 +74,6 @@
         public const double EXPLORATORY_MAX_CHEEK_BOSS_THICKNESS = 150.0;
         public const double EXPLORATORY_MIN_WELD_THROAT = 3.0;
         public const double EXPLORATORY_MAX_WELD_THROAT = 50.0;
-        public const double EXPLORATORY_MIN_EDGE_DISTANCE_FACTOR = 0.80;
-        public const double EXPLORATORY_RECOMMENDED_EDGE_DISTANCE_FACTOR = 1.00;
         public const double EXPLORATORY_MAX_WELD_TO_PLATE_RATIO = 0.70;
         public const double EXPLORATORY_MAX_WELD_TO_CHEEK_RATIO = 0.70;
     }

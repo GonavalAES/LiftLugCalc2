@@ -72,6 +72,10 @@ public static class CommandBar
                 if (GuiCommon.Button("RUN")) controller.RunReverseCalculation();
                 break;
 
+            case ScreenEnum.ExploratoryCalculation:
+                DrawExploratoryCommands(controller);
+                break;
+
             case ScreenEnum.Results:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.CalculationMode;
                 ImGui.SameLine();
@@ -129,7 +133,6 @@ public static class CommandBar
         DrawCancelNewProjectPopup(controller);
     }
 
-
     private static void DrawCancelNewProjectPopup(GuiController controller)
     {
         if (confirmCancelNewProject)
@@ -154,5 +157,29 @@ public static class CommandBar
             }
             ImGui.EndPopup();
         }
+    }
+
+    private static void DrawExploratoryCommands(GuiController controller)
+    {
+        Session session = controller.CurrentSession;
+        bool hasReferenceLug = session.ExploratoryReferenceLug is not null;
+        bool geometryIsValid = session.ExploratoryValidationResult is not null && session.ExploratoryValidationResult.IsValid;
+
+        if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.MaterialSelection;
+
+        ImGui.SameLine();
+
+        if (GuiCommon.Button("RESET TO REFERENCE", GuiConstants.ButtonWidth + 70.0f, GuiConstants.ButtonHeight, hasReferenceLug))
+            controller.ResetExploratoryLug();
+
+        ImGui.SameLine();
+
+        if (GuiCommon.Button("VALIDATE GEOMETRY", GuiConstants.ButtonWidth + 70.0f, GuiConstants.ButtonHeight, hasReferenceLug))
+            controller.ValidateExploratoryLug();
+
+        ImGui.SameLine();
+
+        if (GuiCommon.Button("RUN", GuiConstants.ButtonWidth, GuiConstants.ButtonHeight, geometryIsValid))
+            controller.RunExploratoryCalculation();
     }
 }

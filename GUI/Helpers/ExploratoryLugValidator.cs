@@ -106,116 +106,31 @@ public static class ExploratoryLugValidator
             errors);
     }
 
-    private static void ValidateHoleGeometry(
-        CustomLug lug,
-        List<string> errors,
-        List<string> warnings)
+    private static void ValidateHoleGeometry(CustomLug lug, List<string> errors, List<string> warnings)
     {
         double holeRadius = lug.DiameterHole * 0.5;
-        double edgeDistance = lug.RadiusLug - holeRadius;
         double topEdgeDistance = lug.HeightCenterHole - holeRadius;
 
-        if (lug.DiameterHole >= 2.0 * lug.RadiusLug)
-        {
-            errors.Add(
-                "Hole diameter is equal to or greater than the lug diameter.");
-        }
-
-        if (holeRadius >= lug.RadiusLug)
-        {
-            errors.Add(
-                "Hole radius must be smaller than lug radius.");
-        }
-
-        if (lug.HeightCenterHole <= holeRadius)
-        {
-            errors.Add(
-                "Hole centre height must be greater than the hole radius.");
-        }
-
-        if (edgeDistance <= 0.0)
-        {
-            errors.Add(
-                "The hole reaches or exceeds the rounded outside edge of the lug.");
-        }
-
-        if (topEdgeDistance <= 0.0)
-        {
-            errors.Add(
-                "The hole reaches or exceeds the lug base/toe line.");
-        }
-
-        double minimumEdgeDistance =
-            Constants.EXPLORATORY_MIN_EDGE_DISTANCE_FACTOR *
-            lug.DiameterHole;
-
-        double recommendedEdgeDistance =
-            Constants.EXPLORATORY_RECOMMENDED_EDGE_DISTANCE_FACTOR *
-            lug.DiameterHole;
-
-        if (edgeDistance < minimumEdgeDistance)
-        {
-            errors.Add(
-                $"Side edge distance is {edgeDistance:F1} mm. " +
-                $"Minimum is {minimumEdgeDistance:F1} mm.");
-        }
-        else if (edgeDistance < recommendedEdgeDistance)
-        {
-            warnings.Add(
-                $"Side edge distance is {edgeDistance:F1} mm. " +
-                $"Recommended value is at least {recommendedEdgeDistance:F1} mm.");
-        }
-
-        if (topEdgeDistance < minimumEdgeDistance)
-        {
-            errors.Add(
-                $"Top edge distance is {topEdgeDistance:F1} mm. " +
-                $"Minimum is {minimumEdgeDistance:F1} mm.");
-        }
-        else if (topEdgeDistance < recommendedEdgeDistance)
-        {
-            warnings.Add(
-                $"Top edge distance is {topEdgeDistance:F1} mm. " +
-                $"Recommended value is at least {recommendedEdgeDistance:F1} mm.");
-        }
+        if (lug.DiameterHole >= 2.0 * lug.RadiusLug) errors.Add("Hole diameter is equal to or greater than the lug diameter.");
+        if (holeRadius >= lug.RadiusLug) errors.Add("Hole radius must be smaller than lug radius.");
+        if (lug.HeightCenterHole <= holeRadius) errors.Add("Hole centre height must be greater than the hole radius.");
+        if (topEdgeDistance <= 0.0) errors.Add("The hole reaches or exceeds the lug base/toe line.");
     }
 
-    private static void ValidateMainWeld(
-        CustomLug lug,
-        List<string> errors,
-        List<string> warnings)
+    private static void ValidateMainWeld(CustomLug lug, List<string> errors, List<string> warnings)
     {
-        if (lug.LugType == 0)
-        {
-            return;
-        }
+        if (lug.LugType == 0) return;
 
-        ValidateRange(
-            lug.LugWeldThroat,
-            Constants.EXPLORATORY_MIN_WELD_THROAT,
-            Constants.EXPLORATORY_MAX_WELD_THROAT,
-            "Main weld throat",
-            "mm",
-            errors);
+        ValidateRange(lug.LugWeldThroat, Constants.EXPLORATORY_MIN_WELD_THROAT, Constants.EXPLORATORY_MAX_WELD_THROAT,
+                      "Main weld throat", "mm", errors);
 
-        double maximumWeldThroat =
-            lug.ThicknessPlate *
-            Constants.EXPLORATORY_MAX_WELD_TO_PLATE_RATIO;
+        double maximumWeldThroat = lug.ThicknessPlate * Constants.EXPLORATORY_MAX_WELD_TO_PLATE_RATIO;
 
-        if (lug.LugWeldThroat > maximumWeldThroat)
-        {
-            errors.Add(
-                $"Main weld throat is {lug.LugWeldThroat:F1} mm. " +
-                $"It cannot exceed {maximumWeldThroat:F1} mm " +
-                $"for a {lug.ThicknessPlate:F1} mm plate.");
-        }
-
-        if (lug.LugWeldThroat > lug.HeightToe)
-        {
-            warnings.Add(
-                $"Main weld throat is greater than toe height " +
-                $"({lug.HeightToe:F1} mm). Verify the base geometry.");
-        }
+        if (lug.LugWeldThroat > maximumWeldThroat) errors.Add($"Main weld throat is {lug.LugWeldThroat:F1} mm. " +
+                                                              $"It cannot exceed {maximumWeldThroat:F1} mm " +
+                                                              $"for a {lug.ThicknessPlate:F1} mm plate.");
+        if (lug.LugWeldThroat > lug.HeightToe) warnings.Add($"Main weld throat is greater than toe height " +
+                                                            $"({lug.HeightToe:F1} mm). Verify the base geometry.");
     }
 
     private static void ValidateCheekOrBossGeometry(
