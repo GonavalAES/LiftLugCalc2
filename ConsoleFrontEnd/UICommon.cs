@@ -388,13 +388,6 @@ public static class UICommon
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"[ERROR] {message}");
         Console.ResetColor();
-        MessagePause();
-    }
-    public static void MessagePause(string message = "> Press any key to continue...")
-    {
-        Console.WriteLine();
-        Console.WriteLine(message);
-        Console.ReadKey();
     }
     public static void MessageSuccess(string message)
     {

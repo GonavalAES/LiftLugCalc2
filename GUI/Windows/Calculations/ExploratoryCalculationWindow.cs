@@ -71,17 +71,14 @@ public static class ExploratoryCalculationWindow
     private static int GetReferenceLugIndex(Session session)
     {
         if (session.ExploratoryReferenceLug is null) return 0;
-
         for (int index = 0; index < AppState.Lugs.Count; index++)
             if (AppState.Lugs[index].LugID == session.ExploratoryReferenceLug.LugID) return index;
-
         return 0;
     }
 
     private static string CreateReferenceLugName(TableLug lug)
     {
         string lugType = LugPresentation.GetLugTypeName(lug.LugType);
-
         return $"ID {lug.LugID} - {lugType} - {lug.LugWLL:N0} kg";
     }
 
@@ -95,7 +92,6 @@ public static class ExploratoryCalculationWindow
         }
 
         TableLug referenceLug = session.ExploratoryReferenceLug;
-
         ExploratoryLugEditor editor = session.ExploratoryLugEditor;
 
         GuiCommon.SectionHeader("Custom Lug Geometry");

@@ -51,7 +51,10 @@ public static class ReportGenerator
             sb.AppendLine("------------------------------------------------");
             sb.AppendLine("LUG CHARACTERISTICS");
             sb.AppendLine("------------------------------------------------");
-            sb.AppendLine($"Lug ID               : {lug.LugID}");
+
+            string lugIdText = lug.LugID < 0 ? "User-defined exploratory lug" : lug.LugID.ToString();
+
+            sb.AppendLine($"Lug ID               : {lugIdText}");
             sb.AppendLine($"Lug Type             : {lug.LugType}");
             sb.AppendLine($"Work Load Limit      : {lug.LugWLL} kg");
             sb.AppendLine();

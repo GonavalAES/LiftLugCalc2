@@ -147,7 +147,8 @@ public sealed class GuiController
             project.SelectedLug = AppState.Lugs.FirstOrDefault(lug => lug.LugID == project.UserLugID.Value);
 
         if (project.UserMaterialID.HasValue)
-            project.SelectedMaterial = AppState.Materials.FirstOrDefault(material => material.MaterialID == project.UserMaterialID.Value);
+            project.SelectedMaterial = AppState.Materials.FirstOrDefault(material => material.MaterialID ==
+            project.UserMaterialID.Value);
 
         CurrentSession.CurrentProject = project;
 
@@ -320,9 +321,19 @@ public sealed class GuiController
             return;
         }
 
-        CustomLug customLug = CurrentSession.ExploratoryLugEditor.ToCustomLug();
+        ExploratoryLugEditor editor = CurrentSession.ExploratoryLugEditor;
+        CustomLug customLug = editor.ToCustomLug();
 
-        ExploratoryValidationResult validationResult = ExploratoryLugValidator.Validate(customLug);
+        ExploratoryValidationInput validationInput = new
+        (
+            Lug: customLug,
+            CheckLugWeldThroat: editor.ChangeLugWeldThroat,
+            CheckCheekBossWeldThroat: editor.ChangeWeldThroatCheek
+        );
+
+        ExploratoryValidationResult validationResult =
+            ExploratoryLugValidator.Validate(
+                validationInput);
 
         CurrentSession.ExploratoryValidationResult = validationResult;
 
@@ -394,13 +405,17 @@ public sealed class GuiController
 
         Project project = CurrentSession.CurrentProject;
         Material material = CurrentSession.SelectedMaterial;
+
         CustomLug customLug = CurrentSession.ExploratoryLugEditor.ToCustomLug();
-
         ExploratoryInput input = new(project, customLug, material);
-
         CalculationResult result = ExploratoryCalculator.Run(input, "3");
 
         CurrentSession.CurrentResult = result;
+
+        TableLug calculationLug = ExploratoryCalculator.ConvertToCalculationLug(customLug);
+
+        CurrentSession.CurrentProject.SelectedLug = calculationLug;
+
         CurrentSession.StatusType = result.Pass ? StatusType.Information : StatusType.Warning;
         CurrentSession.StatusMessage = result.Pass ? "Exploratory calculation completed: PASS."
                                                    : "Exploratory calculation completed: FAIL.";

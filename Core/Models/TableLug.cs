@@ -1,6 +1,6 @@
-﻿namespace LiftLugCalc2.Core.Models
-{
-    public record TableLug
+﻿namespace LiftLugCalc2.Core.Models;
+
+public record TableLug
     (
         int LugID,
         int LugType,
@@ -17,4 +17,3 @@
         double LugWeldThroat,
         int Bracket
     );
-}

@@ -161,9 +161,104 @@ public static class ResultsWindow
         TableLug? referenceLug = session.ExploratoryReferenceLug;
         ExploratoryLugEditor editor = session.ExploratoryLugEditor;
 
+        GuiCommon.SectionHeader("Exploratory Lug Definition");
         ImGui.Text("Lug: User-defined exploratory lug");
         ImGui.Text($"Lug type: {LugPresentation.GetLugTypeName(editor.LugType)}");
 
-        if (referenceLug is not null) ImGui.Text($"Reference lug: ID {referenceLug.LugID}");
+        if (referenceLug is null)
+        {
+            ImGui.TextWrapped("Reference lug data is not available in the current session.");
+            return;
+        }
+
+        ImGui.Text($"Reference lug: ID {referenceLug.LugID}");
+        ImGui.Text($"Reference WLL: {referenceLug.LugWLL:N0} kg");
+        GuiCommon.Spacer();
+
+        DrawModifiedGeometry(referenceLug, editor);
+    }
+
+    private static void DrawModifiedGeometry(TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        bool hasModifiedGeometry = HasModifiedGeometry(editor);
+
+        GuiCommon.SectionHeader("Modified Geometry");
+
+        if (!hasModifiedGeometry)
+        {
+            ImGui.TextWrapped("No geometry properties were modified. The reference lug geometry was verified as entered.");
+            return;
+        }
+
+        if (!ImGui.BeginTable("ModifiedExploratoryGeometryTable", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
+                              ImGuiTableFlags.SizingFixedFit)) return;
+
+        ImGui.TableSetupColumn("Property");
+        ImGui.TableSetupColumn("Reference");
+        ImGui.TableSetupColumn("Final value");
+        ImGui.TableHeadersRow();
+
+        DrawModifiedGeometryRow("Plate thickness [mm]", referenceLug.ThicknessPlate, editor.ThicknessPlate,
+                                editor.ChangeThicknessPlate);
+        DrawModifiedGeometryRow("Hole diameter [mm]", referenceLug.DiameterHole, editor.DiameterHole, editor.ChangeDiameterHole);
+        DrawModifiedGeometryRow("Lug radius [mm]", referenceLug.RadiusLug, editor.RadiusLug, editor.ChangeRadiusLug);
+        DrawModifiedGeometryRow("Hole centre height [mm]", referenceLug.HeightCenterHole, editor.HeightCenterHole,
+                                editor.ChangeHeightCenterHole);
+        DrawModifiedGeometryRow("Lug length [mm]", referenceLug.LengthLug, editor.LengthLug, editor.ChangeLengthLug);
+        DrawModifiedGeometryRow("Toe height [mm]", referenceLug.HeightToe, editor.HeightToe, editor.ChangeHeightToe);
+        DrawCheekBossModifiedGeometryRows(referenceLug, editor);
+        DrawWeldModifiedGeometryRows(referenceLug, editor);
+
+        ImGui.EndTable();
+    }
+
+    private static void DrawModifiedGeometryRow(string propertyName, double referenceValue, double finalValue, bool isModified)
+    {
+        if (!isModified) return;
+
+        ImGui.TableNextRow();
+        ImGui.TableSetColumnIndex(0);
+        ImGui.Text(propertyName);
+        ImGui.TableSetColumnIndex(1);
+        ImGui.Text($"{referenceValue:N2}");
+        ImGui.TableSetColumnIndex(2);
+        ImGui.Text($"{finalValue:N2}");
+    }
+
+    private static void DrawCheekBossModifiedGeometryRows(TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        if (editor.LugType is not 2 and not 3) return;
+
+        string radiusName = editor.LugType == 2 ? "Cheek radius [mm]" : "Boss radius [mm]";
+        string thicknessName = editor.LugType == 2 ? "Cheek thickness [mm]" : "Boss thickness [mm]";
+
+        DrawModifiedGeometryRow(radiusName, referenceLug.RadiusCheek_Boss, editor.RadiusCheekBoss, editor.ChangeRadiusCheekBoss);
+        DrawModifiedGeometryRow(thicknessName, referenceLug.ThicknessCheek_Boss, editor.ThicknessCheekBoss, editor.ChangeThicknessCheekBoss);
+    }
+
+    private static void DrawWeldModifiedGeometryRows(TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        if (editor.LugType is 1 or 2 or 3) DrawModifiedGeometryRow("Main weld throat [mm]", referenceLug.LugWeldThroat,
+                                                                   editor.LugWeldThroat, editor.ChangeLugWeldThroat);
+        if (editor.LugType is not 2 and not 3) return;
+
+        string weldName = editor.LugType == 2 ? "Cheek weld throat [mm]" : "Boss weld throat [mm]";
+
+        DrawModifiedGeometryRow(weldName, referenceLug.WeldThroatCheek, editor.WeldThroatCheek, editor.ChangeWeldThroatCheek);
+    }
+
+    private static bool HasModifiedGeometry(ExploratoryLugEditor editor)
+    {
+        return
+            editor.ChangeThicknessPlate ||
+            editor.ChangeDiameterHole ||
+            editor.ChangeRadiusLug ||
+            editor.ChangeHeightCenterHole ||
+            editor.ChangeLengthLug ||
+            editor.ChangeHeightToe ||
+            editor.ChangeRadiusCheekBoss ||
+            editor.ChangeThicknessCheekBoss ||
+            editor.ChangeWeldThroatCheek ||
+            editor.ChangeLugWeldThroat;
     }
 }

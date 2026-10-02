@@ -22,6 +22,7 @@ public static class ReverseCalculationWindow
         GuiCommon.SectionHeader("Lift Geometry");
         GuiCommon.LabelValue("A1", project.A1, "mm");
         GuiCommon.LabelValue("A2", project.A2, "mm");
+
         if (project.NumberPoints >= 3) GuiCommon.LabelValue("B1", project.B1, "mm");
         if (project.NumberPoints >= 4) GuiCommon.LabelValue("B2", project.B2, "mm");
 

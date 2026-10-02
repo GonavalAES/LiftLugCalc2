@@ -11,7 +11,7 @@ public static class ExploratoryCalculator
         return ForwardCalculator.Run(forwardInput, choice);
     }
 
-    private static TableLug ConvertToCalculationLug(CustomLug lug)
+    public static TableLug ConvertToCalculationLug(CustomLug lug)
     {
         return new TableLug
         (

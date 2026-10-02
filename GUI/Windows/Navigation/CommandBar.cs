@@ -24,65 +24,55 @@ public static class CommandBar
                 bool newProjectEnabled = !string.IsNullOrWhiteSpace(controller.CurrentSession.ProjectName);
                 if (GuiCommon.Button("NEXT", newProjectEnabled)) controller.CreateProject();
                 break;
-
             case ScreenEnum.WeightDefinition:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.NewProject;
                 GuiCommon.AlignRight();
                 bool weightEnabled = controller.CurrentSession.NominalWeightKg > 0.0;
                 if (GuiCommon.Button("NEXT", weightEnabled)) controller.AcceptWeightDefinition();
                 break;
-
             case ScreenEnum.LiftGeometry:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.WeightDefinition;
                 GuiCommon.AlignRight();
                 bool geometryEnabled = controller.CurrentSession.NumberPoints > 0;
                 if (GuiCommon.Button("NEXT", geometryEnabled)) controller.AcceptLiftGeometry();
                 break;
-
             case ScreenEnum.CalculationMode:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.LiftGeometry;
                 GuiCommon.AlignRight();
                 if (controller.CurrentSession.CalculationMode == CalculationMode.None) GuiCommon.Button("NEXT", false);
                 else if (GuiCommon.Button("NEXT")) controller.AcceptCalculationMode();
                 break;
-
             case ScreenEnum.MaterialSelection:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.CalculationMode;
                 GuiCommon.AlignRight();
                 bool materialEnabled = controller.CurrentSession.SelectedMaterial is not null;
                 if (GuiCommon.Button("NEXT", materialEnabled)) controller.AcceptMaterialSelection();
                 break;
-
             case ScreenEnum.LugGeometry:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.MaterialSelection;
                 GuiCommon.AlignRight();
                 bool lugEnabled = controller.CurrentSession.SelectedLug is not null;
                 if (GuiCommon.Button("NEXT", lugEnabled)) controller.AcceptLugSelection();
                 break;
-
             case ScreenEnum.ForwardCalculation:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.LugGeometry;
                 GuiCommon.AlignRight();
                 if (GuiCommon.Button("RUN")) controller.RunForwardCalculation();
                 break;
-
             case ScreenEnum.ReverseCalculation:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.MaterialSelection;
                 GuiCommon.AlignRight();
                 if (GuiCommon.Button("RUN")) controller.RunReverseCalculation();
                 break;
-
             case ScreenEnum.ExploratoryCalculation:
                 DrawExploratoryCommands(controller);
                 break;
-
             case ScreenEnum.Results:
                 if (GuiCommon.Button("BACK")) controller.CurrentScreen = ScreenEnum.CalculationMode;
                 ImGui.SameLine();
                 GuiCommon.AlignCenter();
                 if (GuiCommon.Button("MODIFY / RE-RUN")) controller.ModifyCalculation();
                 break;
-
             default:
                 break;
         }

@@ -1,6 +1,6 @@
-﻿namespace LiftLugCalc2.Core.Models
-{
-    public record Material
+﻿namespace LiftLugCalc2.Core.Models;
+
+public record Material
     (
         int MaterialID,
         string Designation,
@@ -9,4 +9,3 @@
         double YoungModulus,
         double PoissonRatio
     );
-}

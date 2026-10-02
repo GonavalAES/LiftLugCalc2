@@ -30,20 +30,17 @@ public static class LiftGeometryWindow
                 ImGui.Text("Single lifting point.");
                 ImGui.Text("No geometry input required.");
                 break;
-
             case 2:
                 GuiCommon.Spacer();
                 DrawDistance("A1 [m]", session.A1, value => session.A1 = value);
                 DrawDistance("A2 [m]", session.A2, value => session.A2 = value);
                 break;
-
             case 3:
                 GuiCommon.Spacer();
                 DrawDistance("A1 [m]", session.A1, value => session.A1 = value);
                 DrawDistance("A2 [m]", session.A2, value => session.A2 = value);
                 DrawDistance("B1 [m]", session.B1, value => session.B1 = value);
                 break;
-
             case 4:
                 GuiCommon.Spacer();
                 DrawDistance("A1 [m]", session.A1, value => session.A1 = value);

@@ -35,14 +35,11 @@ public static class ReverseCalculator
         if (passed.Count > 0)
         {
             // Example: minimize LugType then LugWLL, then LugID
-            best = passed
-                .OrderBy(c => c.Lug.LugWLL)
-                .ThenBy(c => c.Lug.LugType)
-                .ThenBy(c => c.Lug.LugID)
-                .First();
+            best = passed.OrderBy(c => c.Lug.LugWLL).ThenBy(c => c.Lug.LugType).ThenBy(c => c.Lug.LugID).First();
         }
 
-        return new ReverseSelection(
+        return new ReverseSelection
+        (
             AppliedLoad: plp,
             Passed: passed,
             Best: best

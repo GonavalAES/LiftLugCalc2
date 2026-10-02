@@ -40,8 +40,6 @@ public static class ForwardCalculator
         return results;
     }
 
-
-
     private static void LugPassCheck(Project project, TableLug lug, Material material, CalculationResult results)
     {
         switch (lug.LugType)
@@ -129,8 +127,6 @@ public static class ForwardCalculator
         results.WeldGeometryOK = isValid;
     }
 
-
-
     private static void CalculateFactorsOfSafety(CalculationResult results)
     {
         //This does all the rations against the applied load and finds the minimum FS
@@ -162,8 +158,6 @@ public static class ForwardCalculator
         // Check pass/fail
         results.Pass = results.MinimumFS >= Constants.MINIMUM_SAFETY_FACTOR && results.WeldGeometryOK;
     }
-
-
 
     // --- CheckType0 --- Type 0: Direct connection - machined from structure, no welds
     // Computes only capacities/resistances related to lug plate
