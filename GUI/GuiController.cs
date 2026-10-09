@@ -169,12 +169,17 @@ public sealed class GuiController
         CurrentSession.SelectedLug = project.SelectedLug;
         CurrentSession.SelectedMaterial = project.SelectedMaterial;
 
+        RestoreExploratoryDefinition(project);
+
         CurrentSession.CurrentResult = null;
 
         CurrentSession.CurrentScreen = ScreenEnum.NewProject;
 
-        CurrentSession.StatusType = StatusType.Information;
-        CurrentSession.StatusMessage = $"Project loaded: {project.Name}";
+        if (CurrentSession.ExploratoryReferenceLug is null)
+        {
+            CurrentSession.StatusType = StatusType.Information;
+            CurrentSession.StatusMessage = $"Project loaded: {project.Name}";
+        }
     }
 
     public void SaveProject()
@@ -208,6 +213,8 @@ public sealed class GuiController
 
         if (project.SelectedLug is not null) project.UserLugID = project.SelectedLug.LugID;
         if (project.SelectedMaterial is not null) project.UserMaterialID = project.SelectedMaterial.MaterialID;
+
+        SaveExploratoryDefinition(project);
 
         string projectDir = FilingSystem.GetProjectDirectory(project.Name);
         string projectFile = Path.Combine(projectDir, "project.txt");
@@ -489,7 +496,7 @@ public sealed class GuiController
         string timestamp = DateTime.Now.ToString("dd-MM-yyyy");
 
         string reportFile = Path.Combine(resultsDir, $"Report_{timestamp}.txt");
-        string reportText = ReportGenerator.GenerateDetailedReport(project, result);
+        string reportText = ReportGenerator.GenerateDetailedReport(project, result, CurrentSession.ExploratoryReferenceLug, CurrentSession.ExploratoryLugEditor);
 
         FilingSystem.SaveTextFile(reportFile, reportText);
 
@@ -573,6 +580,39 @@ public sealed class GuiController
             ScreenEnum.Results => hasResult,
             _ => false
         };
+    }
+    private void SaveExploratoryDefinition(Project project)
+    {
+        TableLug? referenceLug = CurrentSession.ExploratoryReferenceLug;
+
+        if (referenceLug is null) return;
+
+        CurrentSession.ExploratoryLugEditor.CopyToProject(project, referenceLug);
+    }
+
+    private void RestoreExploratoryDefinition(Project project)
+    {
+        CurrentSession.ExploratoryReferenceLug = null;
+        CurrentSession.ExploratoryLugEditor.Reset();
+        CurrentSession.ExploratoryValidationResult = null;
+
+        if (!project.ExploratoryReferenceLugID.HasValue) return;
+
+        TableLug? referenceLug = AppState.Lugs.FirstOrDefault(lug => lug.LugID == project.ExploratoryReferenceLugID.Value);
+
+        if (referenceLug is null)
+        {
+            CurrentSession.StatusType = StatusType.Warning;
+            CurrentSession.StatusMessage = "Saved exploratory reference lug was not found in the current lug table.";
+
+            return;
+        }
+
+        CurrentSession.ExploratoryReferenceLug = referenceLug;
+        CurrentSession.ExploratoryLugEditor.LoadFromProject(project);
+        CurrentSession.StatusType = StatusType.Information;
+        CurrentSession.StatusMessage =
+            $"Saved exploratory lug definition restored from reference lug ID {referenceLug.LugID}. Validate geometry before running.";
     }
 
     public string GetLiftGeometryWarning()

@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 
 using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.Core.Utilities;
 using LiftLugCalc2.GUI.Helpers;
 
 using System.Numerics;
@@ -148,7 +149,40 @@ public static class ResultsWindow
         GuiCommon.Spacer();
 
         ImGui.Text($"Minimum Safety Factor : {result.MinimumFS:N1}");
-        ImGui.Text($"Weld Geometry : {(result.WeldGeometryOK ? "OK" : "NOT OK")}");
+        ImGui.Text($"Governing Check: {result.GoverningCheck}");
+        ImGui.Text($"Governing Capacity: {result.GoverningCapacity:N2} kN");
+        ImGui.Text($"Allowable Point Load: {result.AllowablePointLoad:N2} kN");
+
+        GuiCommon.Spacer();
+        ImGui.Separator();
+        GuiCommon.Spacer();
+
+        GuiCommon.SectionHeader("Indicative Capacity");
+
+        ImGui.TextWrapped("Indicative maximum object mass is calculated from the " +
+                          "governing capacity, the required safety factor, and the " +
+                          "current lifting arrangement. It is not a certified WLL.");
+
+        ImGui.Text($"Indicative Maximum Object Mass: {result.IndicativeMaximumWllKg:N0} kg");
+        ImGui.Text($"Indicative Maximum Object Mass: {result.IndicativeMaximumWllKg / 1000.0:N2} t");
+        GuiCommon.Spacer();
+
+        ImGui.Text($"Weld Geometry: {(result.WeldGeometryOK ? "OK" : "NOT OK")}");
+
+        GuiCommon.Spacer();
+        ImGui.Separator();
+        GuiCommon.Spacer();
+
+        GuiCommon.SectionHeader("Governing Capacity");
+        GuiCommon.LabelValue("Governing check", result.GoverningCheck);
+        GuiCommon.LabelValue("Governing capacity", result.GoverningCapacity, "kN");
+        GuiCommon.LabelValue("Required safety factor", Constants.MINIMUM_SAFETY_FACTOR);
+        GuiCommon.LabelValue("Allowable point load", result.AllowablePointLoad, "kN");
+        GuiCommon.LabelValue("Indicative maximum object mass", result.IndicativeMaximumWllKg, "kg");
+
+        ImGui.TextWrapped("Indicative capacity is derived from the governing calculated capacity " +
+                          "and this project's lifting arrangement. It is not a certified WLL.");
+
         GuiCommon.Spacer();
         ImGui.Separator();
         GuiCommon.Spacer();
@@ -222,7 +256,8 @@ public static class ResultsWindow
         ImGui.TableSetColumnIndex(1);
         ImGui.Text($"{referenceValue:N2}");
         ImGui.TableSetColumnIndex(2);
-        ImGui.Text($"{finalValue:N2}");
+
+        GuiCommon.TextValue($"{finalValue:N2}", highlighted: true);
     }
 
     private static void DrawCheekBossModifiedGeometryRows(TableLug referenceLug, ExploratoryLugEditor editor)

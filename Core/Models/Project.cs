@@ -23,10 +23,42 @@ public record Project
     public double B1 { get; set; }            // Distance transverse 1
     public double B2 { get; set; }            // Distance transverse 2
 
-    public TableLug? SelectedLug { get; set; }        // table lug (Forward/Reverse)
+    public TableLug? SelectedLug { get; set; }// table lug (Forward/Reverse)
     public Material? SelectedMaterial { get; set; }
     public CustomLug? CustomLug { get; set; }         // user-defined lug 
 
     public int? UserLugID { get; set; }
     public int? UserMaterialID { get; set; }
+
+    public int? ExploratoryReferenceLugID { get; set; }
+    public int ExploratoryLugType { get; set; }
+    public double ExploratoryLugWLL { get; set; }
+
+    public double ExploratoryThicknessPlate { get; set; }
+    public double ExploratoryDiameterHole { get; set; }
+    public double ExploratoryRadiusLug { get; set; }
+    public double ExploratoryHeightCenterHole { get; set; }
+    public double ExploratoryLengthLug { get; set; }
+    public double ExploratoryHeightToe { get; set; }
+
+    public double ExploratoryRadiusCheekBoss { get; set; }
+    public double ExploratoryThicknessCheekBoss { get; set; }
+
+    public double ExploratoryWeldThroatCheek { get; set; }
+    public double ExploratoryLugWeldThroat { get; set; }
+
+    public int ExploratoryBracket { get; set; }
+
+    public bool ExploratoryChangeThicknessPlate { get; set; }
+    public bool ExploratoryChangeDiameterHole { get; set; }
+    public bool ExploratoryChangeRadiusLug { get; set; }
+    public bool ExploratoryChangeHeightCenterHole { get; set; }
+    public bool ExploratoryChangeLengthLug { get; set; }
+    public bool ExploratoryChangeHeightToe { get; set; }
+
+    public bool ExploratoryChangeRadiusCheekBoss { get; set; }
+    public bool ExploratoryChangeThicknessCheekBoss { get; set; }
+
+    public bool ExploratoryChangeWeldThroatCheek { get; set; }
+    public bool ExploratoryChangeLugWeldThroat { get; set; }
 }

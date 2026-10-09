@@ -17,44 +17,73 @@ public static class PreliminaryCalculations
 
     public static double CalculatePLP(Project project)
     {
-        // Convert WLL from kg to kN
         double wllKN = project.WLL * Constants.KG_TO_KN;
+        double pointLoadRatio = CalculatePointLoadRatio(project);
 
-        int numPoints = project.NumberPoints;
-        double plp = wllKN;
+        return wllKN * pointLoadRatio;
+    }
 
-        // Distribute load based on number of points (NORSOK R-002)
-        if (numPoints == 1) plp = wllKN;
+    public static double CalculateIndicativeMaximumWllKg(Project project, double allowablePointLoad)
+    {
+        if (allowablePointLoad <= 0.0) return 0.0;
 
-        else if (numPoints == 2) // For 2 points, consider geometry
-        {
-            double totalA = project.A1 + project.A2;
+        double pointLoadRatio = CalculatePointLoadRatio(project);
 
-            if (totalA > 0) plp = wllKN * Math.Max(project.A1, project.A2) / totalA; // Worst case - higher loaded point
-            else plp = wllKN * 0.5;
-        }
+        if (pointLoadRatio <= 0.0) return 0.0;
 
-        else if (numPoints == 3)
-        {
-            double sumA = project.A1 + project.A2;
-            double sumB = project.B1 + project.B2;
+        double allowableWllKN = allowablePointLoad / pointLoadRatio;
 
-            if (sumA > 0 && sumB > 0) plp = wllKN * (project.A1 * project.B1) / (sumA * sumB);
-            else plp = wllKN * 0.333333;
-        }
+        return allowableWllKN / Constants.KG_TO_KN;
+    }
 
-        else if (numPoints == 4)
-        {
-            double sumA = project.A1 + project.A2;
-            double sumB = project.B1 + project.B2;
+    private static double CalculatePointLoadRatio(Project project)
+    {
+        int numberPoints = project.NumberPoints;
 
-            if (sumA > 0 && sumB > 0) plp = wllKN * (project.A1 * project.B1) / (sumA * sumB);
-            else plp = wllKN * 0.25;
-        }
+        double loadDistributionRatio = CalculateLoadDistributionRatio(project, numberPoints);
 
-        plp *= Constants.DAF; // Apply dynamic amplification factor (DAF) per NORSOK
+        return loadDistributionRatio * Constants.DAF;
+    }
 
-        return plp;
+    private static double CalculateLoadDistributionRatio(Project project, int numberPoints)
+    {
+        if (numberPoints == 1) return 1.0;
+        if (numberPoints == 2) return CalculateTwoPointLoadRatio(project);
+        if (numberPoints == 3) return CalculateThreePointLoadRatio(project);
+        if (numberPoints == 4) return CalculateFourPointLoadRatio(project);
+
+        return 0.0;
+    }
+
+    private static double CalculateTwoPointLoadRatio(Project project)
+    {
+        double totalA = project.A1 + project.A2;
+
+        if (totalA > 0.0)
+            return Math.Max(project.A1, project.A2) / totalA;
+
+        return 0.5;
+    }
+
+    private static double CalculateThreePointLoadRatio(Project project)
+    {
+        double sumA = project.A1 + project.A2;
+        double sumB = project.B1 + project.B2;
+
+        if (sumA > 0.0 && sumB > 0.0)
+            return (project.A1 * project.B1) / (sumA * sumB);
+
+        return 0.333333;
+    }
+
+    private static double CalculateFourPointLoadRatio(Project project)
+    {
+        double sumA = project.A1 + project.A2;
+        double sumB = project.B1 + project.B2;
+
+        if (sumA > 0.0 && sumB > 0.0) return (project.A1 * project.B1) / (sumA * sumB);
+
+        return 0.25;
     }
 
     // ---------- Capacity calculations ----------

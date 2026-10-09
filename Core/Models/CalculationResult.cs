@@ -16,6 +16,12 @@ public record CalculationResult
     public double WeldCapacity { get; set; }
     public double FSWeld { get; set; }
     public double MinimumFS { get; set; }
+
+    public double GoverningCapacity { get; set; }
+    public string GoverningCheck { get; set; } = string.Empty;
+    public double AllowablePointLoad { get; set; }
+    public double IndicativeMaximumWllKg { get; set; }
+
     public bool WeldGeometryOK { get; set; }
     public bool Pass { get; set; }
 }

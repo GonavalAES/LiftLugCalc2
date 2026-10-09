@@ -54,10 +54,10 @@ public static class ExploratoryLugValidator
         double holeRadius = lug.DiameterHole * 0.5;
         double topEdgeDistance = lug.HeightCenterHole - holeRadius;
 
-        if (lug.DiameterHole >= 2.0 * lug.RadiusLug) errors.Add("Hole diameter is equal to or greater than the lug diameter.");
-        if (holeRadius >= lug.RadiusLug) errors.Add("Hole radius must be smaller than lug radius.");
-        if (lug.HeightCenterHole <= holeRadius) errors.Add("Hole centre height must be greater than the hole radius.");
-        if (topEdgeDistance <= 0.0) errors.Add("The hole reaches or exceeds the lug base/toe line.");
+        if (lug.DiameterHole >= 2.0 * lug.RadiusLug) errors.Add("Input geometry is impossible: hole diameter must be smaller than the lug outside diameter");
+        if (holeRadius >= lug.RadiusLug) errors.Add("Input geometry is impossible: hole radius must be smaller than lug radius.");
+        if (lug.HeightCenterHole <= holeRadius) errors.Add("Input geometry is impossible: hole centre height must exceed the hole radius.");
+        if (topEdgeDistance <= 0.0) errors.Add("Input geometry is impossible: the hole reaches or exceeds the base reference line.");
     }
 
     private static void ValidateMainWeld(CustomLug lug, bool checkLugWeldThroat, List<string> errors, List<string> warnings)
@@ -71,11 +71,11 @@ public static class ExploratoryLugValidator
         double maximumWeldThroat = lug.ThicknessPlate * Constants.EXPLORATORY_MAX_WELD_TO_PLATE_RATIO;
 
         if (lug.LugWeldThroat > maximumWeldThroat)
-            errors.Add($"Main weld throat is {lug.LugWeldThroat:F1} mm. It cannot exceed {maximumWeldThroat:F1} mm " +
-                       $"for a {lug.ThicknessPlate:F1} mm plate.");
+            errors.Add($"Geometry limit: main weld throat is {lug.LugWeldThroat:F1} mm, exceeding the current " +
+                       $"input limit of {maximumWeldThroat:F1} mm for a {lug.ThicknessPlate:F1} mm plate.");
 
-        if (lug.LugWeldThroat > lug.HeightToe) warnings.Add($"Main weld throat is greater than toe height " +
-                                                            $"({lug.HeightToe:F1} mm). Verify the base geometry.");
+        if (lug.LugWeldThroat > lug.HeightToe) warnings.Add($"Input geometry warning: main weld throat exceeds the " +
+                                                            $"toe height ({lug.HeightToe:F1} mm). Review the base geometry.");
     }
 
     private static void ValidateCheekOrBossGeometry(CustomLug lug, bool checkCheekBossWeldThroat, List<string> errors,
@@ -88,9 +88,9 @@ public static class ExploratoryLugValidator
         ValidateRange(lug.ThicknessCheekBoss, Constants.EXPLORATORY_MIN_CHEEK_BOSS_THICKNESS,
                       Constants.EXPLORATORY_MAX_CHEEK_BOSS_THICKNESS, "Cheek/boss thickness", "mm", errors);
 
-        if (lug.RadiusCheekBoss < lug.DiameterHole * 0.5) errors.Add("Cheek/boss radius must be greater than the hole radius.");
-        if (lug.RadiusCheekBoss > lug.RadiusLug) warnings.Add("Cheek/boss radius is greater than lug radius. " +
-                                                              "Verify that this geometry is intentional.");
+        if (lug.RadiusCheekBoss < lug.DiameterHole * 0.5) errors.Add("Input geometry is impossible: cheek/boss radius must exceed the hole radius.");
+        if (lug.RadiusCheekBoss > lug.RadiusLug) warnings.Add("Input geometry warning: cheek/boss radius exceeds the main lug radius. " +
+                                                              "Review whether this is intentional.");
 
         if (!checkCheekBossWeldThroat) return;
 
@@ -99,15 +99,17 @@ public static class ExploratoryLugValidator
 
         double maximumCheekWeldThroat = lug.ThicknessCheekBoss * Constants.EXPLORATORY_MAX_WELD_TO_CHEEK_RATIO;
 
-        if (lug.WeldThroatCheek > maximumCheekWeldThroat)
-            errors.Add($"Cheek/boss weld throat is {lug.WeldThroatCheek:F1} mm. It cannot exceed " +
-                $"{maximumCheekWeldThroat:F1} mm for a {lug.ThicknessCheekBoss:F1} mm cheek/boss thickness.");
+        if (lug.WeldThroatCheek > maximumCheekWeldThroat) errors.Add($"Geometry limit: cheek/boss weld throat is " +
+                                                                     $"{lug.WeldThroatCheek:F1} mm, exceeding the current " +
+                                                                     $"input limit of {maximumCheekWeldThroat:F1} mm for a " +
+                                                                     $"{lug.ThicknessCheekBoss:F1} mm cheek/boss thickness.");
     }
 
     private static void ValidateRange(double value, double minimum, double maximum, string propertyName, string unit,
                                       List<string> errors)
     {
-        if (value < minimum || value > maximum) errors.Add($"{propertyName} must be between  {minimum:F1} and {maximum:F1} {unit}. " +
+        if (value < minimum || value > maximum) errors.Add($"User input limit: {propertyName} must be between " +
+                                                           $"{minimum:F1} and {maximum:F1} {unit}. " +
                                                            $"Entered value: {value:F1} {unit}.");
     }
 }

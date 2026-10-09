@@ -127,7 +127,7 @@ public static class ForwardCalculator
         results.WeldGeometryOK = isValid;
     }
 
-    private static void CalculateFactorsOfSafety(CalculationResult results)
+    private static void CalculateFactorsOfSafety(Project project, CalculationResult results)
     {
         //This does all the rations against the applied load and finds the minimum FS
         double appliedLoad = results.AppliedLoad;
@@ -154,6 +154,11 @@ public static class ForwardCalculator
         if (results.FSWeld > 0) factorsOfSafety.Add(results.FSWeld);
 
         results.MinimumFS = factorsOfSafety.Min();
+
+        DetermineGoverningCapacity(results);
+
+        results.IndicativeMaximumWllKg = PreliminaryCalculations.CalculateIndicativeMaximumWllKg(project, results.AllowablePointLoad);
+
 
         // Check pass/fail
         results.Pass = results.MinimumFS >= Constants.MINIMUM_SAFETY_FACTOR && results.WeldGeometryOK;
@@ -189,7 +194,7 @@ public static class ForwardCalculator
         results.WeldGeometryOK = true; // N/A for Type 0
 
         // 6. Determine minimum FS amd return pass/fail
-        CalculateFactorsOfSafety(results);
+        CalculateFactorsOfSafety(project, results);
     }
 
     // --- CheckType1 --- Type 1: Single plate lug with fillet welds at base
@@ -237,7 +242,7 @@ public static class ForwardCalculator
         results.WeldCapacity = PreliminaryCalculations.WeldCapacity(weldArea, fy); // kN
 
         // 9. Calculate factors of safety and check pass/fail
-        CalculateFactorsOfSafety(results);
+        CalculateFactorsOfSafety(project, results);
     }
 
     // --- CheckType2 --- Type 2: Cheek plate lug - main plate with two side cheek plates
@@ -293,7 +298,7 @@ public static class ForwardCalculator
         results.WeldCapacity = PreliminaryCalculations.WeldCapacity(totalWeldArea, fy);
 
         // 9.Calculate factors of safety and check pass/ fail
-        CalculateFactorsOfSafety(results);
+        CalculateFactorsOfSafety(project, results);
     }
 
     // --- CheckType3 --- Type 3: Boss lug - cylindrical boss with lug plate on top
@@ -353,6 +358,30 @@ public static class ForwardCalculator
         results.WeldCapacity = Math.Min(weldCapacityLug, weldCapacityBoss);
 
         // 9.Calculate factors of safety and check pass/ fail
-        CalculateFactorsOfSafety(results);
+        CalculateFactorsOfSafety(project, results);
+    }
+
+    private static void DetermineGoverningCapacity(CalculationResult results)
+    {
+        string governingCheck = "Tension";
+        double governingCapacity = results.TensionCapacity;
+
+        UpdateGoverningCapacity("Bearing", results.BearingCapacity, ref governingCheck, ref governingCapacity);
+        UpdateGoverningCapacity("Tear-out", results.TearOutCapacity, ref governingCheck, ref governingCapacity);
+        UpdateGoverningCapacity("Shear", results.ShearCapacity, ref governingCheck, ref governingCapacity);
+        UpdateGoverningCapacity("Weld", results.WeldCapacity, ref governingCheck, ref governingCapacity);
+
+        results.GoverningCheck = governingCheck;
+        results.GoverningCapacity = governingCapacity;
+        results.AllowablePointLoad = governingCapacity / Constants.MINIMUM_SAFETY_FACTOR;
+    }
+
+    private static void UpdateGoverningCapacity(string checkName, double capacity, ref string governingCheck, ref double governingCapacity)
+    {
+        if (capacity <= 0.0) return;
+        if (capacity >= governingCapacity) return;
+
+        governingCheck = checkName;
+        governingCapacity = capacity;
     }
 }

@@ -128,4 +128,59 @@ public sealed class ExploratoryLugEditor
             Bracket: Bracket
         );
     }
+
+    public void CopyToProject(Project project, TableLug referenceLug)
+    {
+        project.ExploratoryReferenceLugID = referenceLug.LugID;
+        project.ExploratoryLugType = LugType;
+        project.ExploratoryLugWLL = LugWLL;
+        project.ExploratoryThicknessPlate = ThicknessPlate;
+        project.ExploratoryDiameterHole = DiameterHole;
+        project.ExploratoryRadiusLug = RadiusLug;
+        project.ExploratoryHeightCenterHole = HeightCenterHole;
+        project.ExploratoryLengthLug = LengthLug;
+        project.ExploratoryHeightToe = HeightToe;
+        project.ExploratoryRadiusCheekBoss = RadiusCheekBoss;
+        project.ExploratoryThicknessCheekBoss = ThicknessCheekBoss;
+        project.ExploratoryWeldThroatCheek = WeldThroatCheek;
+        project.ExploratoryLugWeldThroat = LugWeldThroat;
+        project.ExploratoryBracket = Bracket;
+        project.ExploratoryChangeThicknessPlate = ChangeThicknessPlate;
+        project.ExploratoryChangeDiameterHole = ChangeDiameterHole;
+        project.ExploratoryChangeRadiusLug = ChangeRadiusLug;
+        project.ExploratoryChangeHeightCenterHole = ChangeHeightCenterHole;
+        project.ExploratoryChangeLengthLug = ChangeLengthLug;
+        project.ExploratoryChangeHeightToe = ChangeHeightToe;
+        project.ExploratoryChangeRadiusCheekBoss = ChangeRadiusCheekBoss;
+        project.ExploratoryChangeThicknessCheekBoss = ChangeThicknessCheekBoss;
+        project.ExploratoryChangeWeldThroatCheek = ChangeWeldThroatCheek;
+        project.ExploratoryChangeLugWeldThroat = ChangeLugWeldThroat;
+    }
+
+    public void LoadFromProject(Project project)
+    {
+        LugType = project.ExploratoryLugType;
+        LugWLL = project.ExploratoryLugWLL;
+        ThicknessPlate = project.ExploratoryThicknessPlate;
+        DiameterHole = project.ExploratoryDiameterHole;
+        RadiusLug = project.ExploratoryRadiusLug;
+        HeightCenterHole = project.ExploratoryHeightCenterHole;
+        LengthLug = project.ExploratoryLengthLug;
+        HeightToe = project.ExploratoryHeightToe;
+        RadiusCheekBoss = project.ExploratoryRadiusCheekBoss;
+        ThicknessCheekBoss = project.ExploratoryThicknessCheekBoss;
+        WeldThroatCheek = project.ExploratoryWeldThroatCheek;
+        LugWeldThroat = project.ExploratoryLugWeldThroat;
+        Bracket = project.ExploratoryBracket;
+        ChangeThicknessPlate = project.ExploratoryChangeThicknessPlate;
+        ChangeDiameterHole = project.ExploratoryChangeDiameterHole;
+        ChangeRadiusLug = project.ExploratoryChangeRadiusLug;
+        ChangeHeightCenterHole = project.ExploratoryChangeHeightCenterHole;
+        ChangeLengthLug = project.ExploratoryChangeLengthLug;
+        ChangeHeightToe = project.ExploratoryChangeHeightToe;
+        ChangeRadiusCheekBoss = project.ExploratoryChangeRadiusCheekBoss;
+        ChangeThicknessCheekBoss = project.ExploratoryChangeThicknessCheekBoss;
+        ChangeWeldThroatCheek = project.ExploratoryChangeWeldThroatCheek;
+        ChangeLugWeldThroat = project.ExploratoryChangeLugWeldThroat;
+    }
 }

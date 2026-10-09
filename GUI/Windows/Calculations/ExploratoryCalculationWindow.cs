@@ -97,6 +97,12 @@ public static class ExploratoryCalculationWindow
         GuiCommon.SectionHeader("Custom Lug Geometry");
         ImGui.TextWrapped("Select one or more properties to modify. Unticked properties remain equal to the selected reference lug.");
 
+        if (session.ExploratoryValidationResult is null && HasRestoredCustomGeometry(session.ExploratoryReferenceLug, editor))
+        {
+            GuiCommon.Spacer();
+            GuiCommon.StatusMessage(StatusType.Warning, "Saved custom geometry is loaded. Validate geometry before running the calculation.");
+        }
+
         GuiCommon.Spacer();
         DrawLugIdentification(referenceLug, editor);
 
@@ -126,10 +132,16 @@ public static class ExploratoryCalculationWindow
 
         if (result is null) return;
 
-        GuiCommon.SectionHeader("Geometry Validation");
+        GuiCommon.SectionHeader("Input Geometry Check");
 
-        if (result.IsValid) GuiCommon.StatusMessage(StatusType.Information, "Geometry is valid for calculation.");
-        else GuiCommon.StatusMessage(StatusType.Error, "Geometry contains errors. Correct them before calculation.");
+        ImGui.TextWrapped("This check screens the entered geometry for application input limits and basic geometric consistency. " +
+                          "It is not the final engineering verification.");
+
+        GuiCommon.Spacer();
+
+        if (result.IsValid) GuiCommon.StatusMessage(StatusType.Information,
+                                                    "Input geometry accepted. Run the calculation to perform engineering verification.");
+        else GuiCommon.StatusMessage(StatusType.Error, "Input geometry contains errors. Correct them before calculation.");
 
         foreach (string error in result.Errors) GuiCommon.StatusMessage(StatusType.Error, error);
         foreach (string warning in result.Warnings) GuiCommon.StatusMessage(StatusType.Warning, warning);
@@ -289,6 +301,16 @@ public static class ExploratoryCalculationWindow
 
         ImGui.TableSetColumnIndex(1);
         ImGui.Text(propertyName);
+
+        string? tooltip = GetPropertyTooltip(id);
+
+        if (!string.IsNullOrWhiteSpace(tooltip) && ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.TextWrapped(tooltip);
+            ImGui.EndTooltip();
+        }
+
         ImGui.TableSetColumnIndex(2);
         ImGui.Text($"{referenceValue:F2}");
         ImGui.TableSetColumnIndex(3);
@@ -298,5 +320,36 @@ public static class ExploratoryCalculationWindow
         return checkboxChanged || valueChanged;
     }
 
+    private static bool HasRestoredCustomGeometry(TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        return
+            editor.ChangeThicknessPlate ||
+            editor.ChangeDiameterHole ||
+            editor.ChangeRadiusLug ||
+            editor.ChangeHeightCenterHole ||
+            editor.ChangeLengthLug ||
+            editor.ChangeHeightToe ||
+            editor.ChangeRadiusCheekBoss ||
+            editor.ChangeThicknessCheekBoss ||
+            editor.ChangeWeldThroatCheek ||
+            editor.ChangeLugWeldThroat;
+    }
 
+    private static string? GetPropertyTooltip(string propertyId)
+    {
+        return propertyId switch
+        {
+            "PlateThickness" => "Thickness of the main lug plate, in millimetres.",
+            "HoleDiameter" => "Diameter of the hole receiving the shackle pin, in millimetres.",
+            "LugRadius" => "Outer radius of the rounded main lug profile, in millimetres.",
+            "HoleCentreHeight" => "Vertical distance from the lug base reference to the hole centre, in millimetres.",
+            "LugLength" => "Length of the lug plate along its base, in millimetres.",
+            "ToeHeight" => "Height of the lug toe/base portion, in millimetres.",
+            "CheekBossRadius" => "Outer radius of the cheek plate or boss, in millimetres.",
+            "CheekBossThickness" => "Thickness of the cheek plate or boss, in millimetres.",
+            "MainWeldThroat" => "Effective throat dimension of the main lug weld, in millimetres.",
+            "CheekBossWeldThroat" => "Effective throat dimension of the cheek-plate or boss weld, in millimetres.",
+            _ => null
+        };
+    }
 }

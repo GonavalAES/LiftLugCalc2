@@ -119,4 +119,15 @@ public static class GuiCommon
         ImGui.EndDisabled();
         return clicked;
     }
+
+    public static void TextValue(string text, bool highlighted)
+    {
+        if (highlighted)
+        {
+            ImGui.TextColored(new Vector4(0.35f, 0.75f, 1.0f, 1.0f), text);
+            return;
+        }
+
+        ImGui.Text(text);
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using LiftLugCalc2.Core.FileOperations;
 using LiftLugCalc2.Core.Models;
+using LiftLugCalc2.GUI.Helpers;
 
 using System.Text;
 
@@ -7,7 +8,9 @@ namespace LiftLugCalc2.Core.Utilities;
 
 public static class ReportGenerator
 {
-    public static string GenerateDetailedReport(Project project, CalculationResult result)
+    public static string GenerateDetailedReport(Project project, CalculationResult result,
+                                                TableLug? exploratoryReferenceLug = null,
+                                                ExploratoryLugEditor? exploratoryLugEditor = null)
     {
         var sb = new StringBuilder();
 
@@ -40,6 +43,9 @@ public static class ReportGenerator
         sb.AppendLine($"Minimum FS      : {result.MinimumFS:N1}");
         sb.AppendLine("------------------------------------------------");
         sb.AppendLine();
+
+        if (result.CalculationType == "Exploratory Calculation")
+            AppendExploratoryDefinition(sb, exploratoryReferenceLug, exploratoryLugEditor);
 
         if (project.SelectedLug is { } lug)
         {
@@ -106,6 +112,89 @@ public static class ReportGenerator
         sb.AppendLine($"Report generated: {DateTime.Now:dd-MM-yyyy HH:mm:ss}");
 
         return sb.ToString();
+    }
+
+    private static void AppendExploratoryDefinition(StringBuilder sb, TableLug? referenceLug, ExploratoryLugEditor? editor)
+    {
+        sb.AppendLine();
+        sb.AppendLine("------------------------------------------------");
+        sb.AppendLine("         EXPLORATORY LUG DEFINITION");
+        sb.AppendLine("------------------------------------------------");
+
+        if (referenceLug is null || editor is null)
+        {
+            sb.AppendLine("Exploratory reference geometry is not available in the current session.");
+            return;
+        }
+
+        sb.AppendLine($"Reference Lug ID : {referenceLug.LugID}");
+        sb.AppendLine($"Reference Lug Type : {referenceLug.LugType}");
+        sb.AppendLine($"Reference Lug WLL : {referenceLug.LugWLL:N0} kg");
+        sb.AppendLine();
+        sb.AppendLine("MODIFIED PROPERTIES");
+
+        if (!HasModifiedGeometry(editor))
+        {
+            sb.AppendLine("No properties were modified.");
+            sb.AppendLine("Reference lug geometry was verified as entered.");
+            return;
+        }
+
+        sb.AppendLine("Property                         Reference     Final Value");
+        sb.AppendLine("------------------------------------------------------------");
+
+        AppendModifiedGeometryLine(sb, "Plate thickness [mm]", referenceLug.ThicknessPlate, editor.ThicknessPlate, editor.ChangeThicknessPlate);
+        AppendModifiedGeometryLine(sb, "Hole diameter [mm]", referenceLug.DiameterHole, editor.DiameterHole, editor.ChangeDiameterHole);
+        AppendModifiedGeometryLine(sb, "Lug radius [mm]", referenceLug.RadiusLug, editor.RadiusLug, editor.ChangeRadiusLug);
+        AppendModifiedGeometryLine(sb, "Hole centre height [mm]", referenceLug.HeightCenterHole, editor.HeightCenterHole, editor.ChangeHeightCenterHole);
+        AppendModifiedGeometryLine(sb, "Lug length [mm]", referenceLug.LengthLug, editor.LengthLug, editor.ChangeLengthLug);
+        AppendModifiedGeometryLine(sb, "Toe height [mm]", referenceLug.HeightToe, editor.HeightToe, editor.ChangeHeightToe);
+
+        AppendCheekBossModifiedLines(sb, referenceLug, editor);
+        AppendWeldModifiedLines(sb, referenceLug, editor);
+    }
+
+    private static void AppendModifiedGeometryLine(StringBuilder sb, string propertyName, double referenceValue, double finalValue, bool isModified)
+    {
+        if (!isModified) return;
+        sb.AppendLine($"{propertyName,-30} {referenceValue,12:N2} {finalValue,16:N2}");
+    }
+
+    private static void AppendCheekBossModifiedLines(StringBuilder sb, TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        if (editor.LugType is not 2 and not 3) return;
+
+        string radiusName = editor.LugType == 2 ? "Cheek radius [mm]" : "Boss radius [mm]";
+        string thicknessName = editor.LugType == 2 ? "Cheek thickness [mm]" : "Boss thickness [mm]";
+
+        AppendModifiedGeometryLine(sb, radiusName, referenceLug.RadiusCheek_Boss, editor.RadiusCheekBoss, editor.ChangeRadiusCheekBoss);
+        AppendModifiedGeometryLine(sb, thicknessName, referenceLug.ThicknessCheek_Boss, editor.ThicknessCheekBoss, editor.ChangeThicknessCheekBoss);
+    }
+
+    private static void AppendWeldModifiedLines(StringBuilder sb, TableLug referenceLug, ExploratoryLugEditor editor)
+    {
+        if (editor.LugType is 1 or 2 or 3)
+            AppendModifiedGeometryLine(sb, "Main weld throat [mm]", referenceLug.LugWeldThroat, editor.LugWeldThroat, editor.ChangeLugWeldThroat);
+        if (editor.LugType is not 2 and not 3) return;
+
+        string weldName = editor.LugType == 2 ? "Cheek weld throat [mm]" : "Boss weld throat [mm]";
+
+        AppendModifiedGeometryLine(sb, weldName, referenceLug.WeldThroatCheek, editor.WeldThroatCheek, editor.ChangeWeldThroatCheek);
+    }
+
+    private static bool HasModifiedGeometry(ExploratoryLugEditor editor)
+    {
+        return
+            editor.ChangeThicknessPlate ||
+            editor.ChangeDiameterHole ||
+            editor.ChangeRadiusLug ||
+            editor.ChangeHeightCenterHole ||
+            editor.ChangeLengthLug ||
+            editor.ChangeHeightToe ||
+            editor.ChangeRadiusCheekBoss ||
+            editor.ChangeThicknessCheekBoss ||
+            editor.ChangeWeldThroatCheek ||
+            editor.ChangeLugWeldThroat;
     }
 }
 
